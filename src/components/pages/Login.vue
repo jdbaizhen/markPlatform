@@ -85,13 +85,14 @@ export default {
 }
 .login-form{
   position: absolute;
-  left: 10%;
+  left: 50%;
   top: 50%;
   width: 400px;
   height: 280px;
   background: rgba(255,255,255,0.15);
   padding: 35px 50px;
   border-radius: 12px;
+  transform: translate(-200px,-140px);
 }
 .login-input{
   margin-top:20px;

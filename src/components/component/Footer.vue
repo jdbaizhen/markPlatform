@@ -18,5 +18,7 @@ export default {
     line-height: 50px;
     text-align: center;
     border-top: 1px solid #ccc;
+    color: #fff;
+    background: rgb(21,197,210,.7);
 }
 </style>

@@ -13,7 +13,8 @@
         placeholder="密码"
         prefix-icon="el-icon-goods"
         type="password"
-        v-model="password">
+        v-model="password"
+        >
       </el-input>
       <el-button
         type="success"
@@ -31,6 +32,8 @@
 import logo from '@/assets/images/logo.png'
 import axios from 'axios'
 import url from '@/api/login.js'
+import { setSession } from '@/utils/session.js'
+import { Message } from 'element-ui'
 export default {
   name: 'Login',
   data () {
@@ -40,20 +43,7 @@ export default {
       logo: logo
     }
   },
-  created () {
-    this.setAxiosHeaders()
-  },
   methods: {
-    setAxiosHeaders() {
-      axios.interceptors.request.use(
-        config => {
-          config.headers['Content-Type'] = 'application/json;'
-          return config
-        },
-        err => {
-            return Promise.reject(err)
-      })
-    },
     loginUser() {
       axios({
         url: url.login,
@@ -61,17 +51,33 @@ export default {
         data: {
           admin: this.username, 
           pwd: this.password
-        }
+        },
+        transformRequest: [function (data) {
+          let ret = ''
+          for (let it in data) {
+            ret += encodeURIComponent(it) + '=' + encodeURIComponent(data[it]) + '&'
+          }
+        return ret
+       }],
       }).then( res => {
-        console.log(res);
+        if(res.data.result){
+          let role = JSON.parse(res.data.data)
+          let roleArr = []
+          role.forEach((value, index) => {
+            roleArr.push(value.code)
+          })
+          setSession('role', roleArr);
+          setSession('isLogin',true);
+          this.$router.push({path: '/task'});
+        }else{
+          Message.error('请检查账号密码是否输入错误')
+        }
       })
-    },
-    
+    }
   }
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
 .login-container{
   position: fixed;

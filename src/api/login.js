@@ -1,6 +1,7 @@
 
 const URL = {
-  login: '/login'
+  login: '/login',
+  getName: '/user/showUserInfo'
 }
 
 module.exports = URL

@@ -38,7 +38,7 @@ module.exports = {
      */
 
     // https://webpack.js.org/configuration/devtool/#development
-    devtool: 'cheap-module-eval-source-map',
+    devtool: 'source-map',
 
     // If you have problems debugging vue-files in devtools,
     // set this to false - it *may* help
@@ -50,7 +50,7 @@ module.exports = {
 
   build: {
     // Template for index.html
-    index: path.resolve(__dirname, '../dist/index.html'),
+    index: path.resolve(__dirname, '../dist/manage.html'),
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),

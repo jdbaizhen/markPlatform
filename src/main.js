@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Input, Button, Icon, Container, Header, Main, Footer, Menu, MenuItem, Submenu, Form, FormItem, Select, Option, DatePicker, Table, TableColumn } from 'element-ui'
+import { Input, Button, Icon, Container, Header, Main, Aside, Footer, Menu, MenuItem, Submenu, Form, FormItem, Select, Option, DatePicker, Table, TableColumn, Tag, Pagination, Loading, Dialog, Breadcrumb, BreadcrumbItem, Checkbox, Collapse, CollapseItem } from 'element-ui'
 
 Vue.config.productionTip = false
 Vue.use(Input)
@@ -12,6 +12,7 @@ Vue.use(Icon)
 Vue.use(Container)
 Vue.use(Header)
 Vue.use(Main)
+Vue.use(Aside)
 Vue.use(Footer)
 Vue.use(Menu)
 Vue.use(MenuItem)
@@ -23,6 +24,15 @@ Vue.use(Option)
 Vue.use(DatePicker)
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Tag)
+Vue.use(Pagination)
+Vue.use(Loading)
+Vue.use(Dialog)
+Vue.use(Breadcrumb)
+Vue.use(BreadcrumbItem)
+Vue.use(Checkbox)
+Vue.use(Collapse)
+Vue.use(CollapseItem)
 
 /* eslint-disable no-new */
 new Vue({

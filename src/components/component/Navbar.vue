@@ -54,15 +54,17 @@ export default {
     mounted() {
       let isLogin = getSession('isLogin')
       let roleString = getSession('role')
-      if(roleString.indexOf('check_picture') != -1){
-        this.check_picture = true
-      }
-      if(roleString.indexOf('batch_export') != -1){
-        this.batch_export = true
-      }
-      if(roleString.indexOf('task_log_search') != -1){
-        this.task_log_search = true
-      }   
+      if(roleString){
+        if(roleString.indexOf('check_picture') != -1){
+          this.check_picture = true
+        }
+        if(roleString.indexOf('batch_export') != -1){
+          this.batch_export = true
+        }
+        if(roleString.indexOf('task_log_search') != -1){
+          this.task_log_search = true
+        }   
+      } 
       if(isLogin){    
       }else{
         this.$router.push({path: '/login'})

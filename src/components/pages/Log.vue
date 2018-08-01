@@ -53,6 +53,7 @@
 import Breadcrumb from '@/components/component/Breadcrumb'
 import { Message } from 'element-ui'
 import { timeFormat, dataFarmat } from '@/utils/util.js'
+import { getSession } from '@/utils/session.js'
 import axios from 'axios'
 import url from '@/api/log.js'
 export default {
@@ -78,7 +79,7 @@ export default {
                 pageIndex: 1
             },
             taskStatus: [
-                '任务发布', '任务驳回', '任务完成', '审核完成'
+                '任务发布', '任务驳回', '任务完成', '审核完成','任务转移'
             ],
             logTable: [],
             pageCount: 0
@@ -88,7 +89,10 @@ export default {
         Breadcrumb
     },
     mounted() {
-        this.getLogTable()
+        let isLogin = getSession('isLogin');
+        if(isLogin){
+            this.getLogTable()
+        }  
     },
     methods: {
         getLogTable() {
@@ -103,7 +107,6 @@ export default {
                     this.pageCount = data.count
                     this.logTable = data.details
                     this.loading = false
-                    console.log( data.details)
                 }else{
                     Message.error(res.data.message)
                 }
@@ -133,6 +136,7 @@ export default {
         },
         handleCurrentChange(val) { 
             this.logForm.pageIndex = val;
+            this.getLogTable();
         }
     }
 }

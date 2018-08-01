@@ -1,5 +1,5 @@
 <template>
-  <div class="login-container">
+  <div class="login-container" id="mydiv">
     <div class="login-form">
       <img :src="logo" alt="">
       <el-input
@@ -17,7 +17,7 @@
         >
       </el-input>
       <el-button
-        type="success"
+        type="default"
         size="medium"
         class="login-btn"
         @click="loginUser"
@@ -29,11 +29,12 @@
 </template>
 
 <script>
-import logo from '@/assets/images/logo.png'
+import logo from '@/assets/images/logo2.png'
 import axios from 'axios'
 import url from '@/api/login.js'
 import { setSession } from '@/utils/session.js'
 import { Message } from 'element-ui'
+import canvasParticlefrom from '@/utils/canvas-particle.js'
 export default {
   name: 'Login',
   data () {
@@ -42,6 +43,21 @@ export default {
       password: '',
       logo: logo
     }
+  },
+  mounted() {
+    const config = {
+		        vx: 6,	//小球x轴速度,正为右，负为左
+		        vy: 6,	//小球y轴速度
+		        height: 2,	//小球高宽，其实为正方形，所以不宜太大
+		        width: 2,
+		        count: 500,		//点个数
+		        color: "121, 162, 185", 	//点颜色
+		        stroke: "130,255,255", 		//线条颜色
+		        dist: 9000, 	//点吸附距离
+		        e_dist: 20000, 	//鼠标吸附加速距离
+		        max_conn: 10 	//点到点最大连接数
+		    }
+    canvasParticlefrom.canvasInit(config)
   },
   methods: {
     loginUser() {
@@ -85,8 +101,6 @@ export default {
   left: 0;
   bottom: 0;
   right: 0;
-  background: url('../../assets/images/login-bg.jpg');
-  background-size: 100% 100%;
   text-align: center;
 }
 .login-form{
@@ -95,8 +109,10 @@ export default {
   top: 50%;
   width: 400px;
   height: 280px;
-  background: rgba(255,255,255,0.15);
   padding: 35px 50px;
+  border: 1px solid rgba(0,245,255,0.7);
+  background-color: rgba(0,245,255,0.1);
+  box-shadow: 0 0 0 1px hsla(240,0%,100%,.3) inset, 0 .5em 1em rgba(0, 0, 0, 0.6);
   border-radius: 12px;
   transform: translate(-200px,-140px);
 }
@@ -106,7 +122,12 @@ export default {
 }
 .login-btn{
   margin-top: 35px;
+  background: rgba(0,245,255,0.5);
+  border: none;
   width: 100%;
   height: 40px;
+}
+.login-btn:hover{
+  background: rgba(0,238,118,0.5);
 }
 </style>

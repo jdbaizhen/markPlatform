@@ -1,14 +1,39 @@
 <template>
-    <div class="footer">Copyright © 丰华联合科技有限公司 Inc. 2018</div>
+    <div>
+        <div class="go-top" @click="goTop"><i class="el-icon-arrow-up"></i></div>
+        <div class="footer">Copyright © 丰华联合科技有限公司 Inc. 2018</div>
+    </div> 
 </template>
 
 <script>
 export default {
-
+    data() {
+        return {}
+    },
+    methods: {
+        goTop() {
+            window.scrollTo( 0, 0 );
+        }
+    }
 }
 </script>
 
 <style>
+.go-top{
+    position: fixed;
+    bottom: 80px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border: 1px solid #ccc;
+    text-align: center;
+    border-radius: 8px;
+    z-index: 9999;
+}
+.go-top:hover{
+    cursor: pointer;
+}
 .footer{
     position: fixed;
     bottom: 0;
@@ -19,6 +44,7 @@ export default {
     text-align: center;
     border-top: 1px solid #ccc;
     color: #fff;
-    background: rgb(21,197,210,.7);
+    background: rgba(0,245,255,0.7);
+    z-index: 9999;
 }
 </style>

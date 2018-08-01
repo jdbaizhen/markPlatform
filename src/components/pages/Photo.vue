@@ -29,6 +29,7 @@
 
 <script>
 import Breadcrumb from '@/components/component/Breadcrumb'
+import ok from '@/assets/images/o98k.jpg'
 import { dataFarmat } from '@/utils/util.js'
 import axios from 'axios'
 import url from '@/api/photo.js'
@@ -40,7 +41,7 @@ export default {
             loading: false,
             breadcrumb: [],
             pictureInfo: {
-                imgpath: '',
+                imgpath: ok,
 				countPage: 0,
 				nextImgId: '',
 				imgId: ''
@@ -76,7 +77,7 @@ export default {
                     let pictureInfo = JSON.parse(res.data.data)
                     if(pictureInfo == null){
                         this.pictureInfo = {
-                            imgpath: '',
+                            imgpath: ok,
 							countPage: 0,
 							nextImgId: '',
 							imgId: ''
@@ -113,7 +114,7 @@ export default {
                     if(res.data.code == '003'){
                         Message.success(res.data.message)
                         this.pictureInfo = {
-                            imgpath: '',
+                            imgpath: ok,
 							countPage: 0,
 							nextImgId: '',
 							imgId: ''
@@ -137,7 +138,6 @@ export default {
                 if(res.data.result){
                     let data = JSON.parse(res.data.data)
                     this.deletePhotoList = data.deleteCountList
-                    console.log(data.deleteCountList)
                 }else{
                     Message.error(res.data.message)
                 }

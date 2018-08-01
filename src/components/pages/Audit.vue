@@ -79,6 +79,7 @@
 <script>
 import Breadcrumb from '@/components/component/Breadcrumb.vue'
 import { timeFormat, dataFarmat } from '@/utils/util.js'
+import { getSession } from '@/utils/session.js'
 import { Message } from 'element-ui'
 import axios from 'axios'
 import url from '@/api/audit.js'
@@ -116,7 +117,10 @@ export default {
         Breadcrumb
     },
     mounted() {
-        this.getAuditTable()
+        let isLogin = getSession('isLogin');
+        if(isLogin){
+            this.getAuditTable()
+        }
     },
     methods: {
         getAuditTable() {

@@ -16,9 +16,11 @@ export default {
 <style>
 .breadcrumb-style{
     height: 40px;
+    color: #fff ！important;
     line-height: 40px;
-    background: #bbdaf7;
+    background: rgba(0,245,255,0.5);
+    box-shadow: 0 0 0 1px hsla(240,0%,100%,.3) inset, 0 .3em 1em rgba(0, 0, 0, 0.3);
     padding: 0 20px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 </style>

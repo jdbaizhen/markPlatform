@@ -93,7 +93,7 @@
                 </el-table-column>
                 <el-table-column prop="status" label="修改任务状态" width="200">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.status == '1'" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
+                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">标注完成</el-option>
                         </el-select>
                         <span v-else>状态不可更改</span>
@@ -103,7 +103,7 @@
                     <template slot-scope="scope">
                         <el-button type="text" size="small" v-show="scope.row.status == '0'" @click="receiveTask(scope.row.id)">领取</el-button>
                         <router-link :to="{path:'/taskdetail',query: {id: scope.row.id}}"><el-button type="text" size="small" >任务详情</el-button></router-link>
-                        <el-button type="text" size="small" @click="deleteTask(scope.row.id)">删除</el-button>
+                        <el-button type="text" size="small" @click="deleteTask(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -203,14 +203,19 @@ export default {
     },
     mounted() {
         let roleString = getSession('role')
-        if(roleString.indexOf('update_status') != -1){
-            this.update_status = true
-        }
-        if(roleString.indexOf('save_task') != -1){
-            this.save_task = true
-        }
-        this.getTaskTable()
-        this.getTransferPerson()
+        let isLogin = getSession('isLogin')
+        if(roleString){
+            if(roleString.indexOf('update_status') != -1){
+                this.update_status = true
+            }
+            if(roleString.indexOf('save_task') != -1){
+                this.save_task = true
+            }
+        }  
+        if(isLogin){
+            this.getTaskTable()
+            this.getTransferPerson()
+        }  
     },
     methods: {
         //发布任务
@@ -254,21 +259,25 @@ export default {
             })
         },
         //删除任务
-        deleteTask(personId) {
-            let params = dataFarmat({id: personId})
+        deleteTask(person) {
+            let params = dataFarmat({id: person.id})
             if(confirm('确定要删除此任务吗？')){
-                axios({
-                    url: url.deleteTask,
-                    method: 'post',
-                    data: params
-                }).then( res => {
-                    if(res.data.result){
-                        Message.success('任务删除成功')
-                        this.getTaskTable()
-                    }else{
-                        Message.error('任务删除失败')
-                    }
-                })
+                if(person.status == 4){
+                    axios({
+                        url: url.deleteTask,
+                        method: 'post',
+                        data: params
+                    }).then( res => {
+                        if(res.data.result){
+                            Message.success('任务删除成功')
+                            this.getTaskTable()
+                        }else{
+                            Message.error('任务删除失败')
+                        }
+                    })
+                }else{
+                    Message.error('仅可以删除已导出任务')
+                }
             }           
         },
         //获取列表

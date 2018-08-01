@@ -105,6 +105,7 @@
 <script>
 import Breadcrumb from '@/components/component/Breadcrumb.vue'
 import { dataFarmat } from '@/utils/util.js'
+import { getSession } from '@/utils/session.js'
 import axios from 'axios'
 import url from '@/api/taskDetail.js'
 import { Message } from 'element-ui'
@@ -161,7 +162,10 @@ export default {
         this.taskDetailForm.id = personId    
     },
     mounted() {
-        this.getTaskDetailTable()
+        let isLogin = getSession('isLogin');
+        if(isLogin){
+            this.getTaskDetailTable()
+        }
     },
     methods: {
         getTaskDetailTable() {

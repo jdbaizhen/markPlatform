@@ -87,6 +87,7 @@ import axios from 'axios'
 import { Message } from 'element-ui'
 import url from '@/api/export.js'
 import { dataFarmat, timeFormat } from '@/utils/util.js'
+import { getSession } from '@/utils/session.js'
 export default {
     data() {
         return {
@@ -118,7 +119,10 @@ export default {
         Breadcrumb
     },
     mounted() {
-        this.getExportTable()
+        let isLogin = getSession('isLogin');
+        if(isLogin){
+            this.getExportTable()
+        }
     },
     methods: {
         getExportTable() {

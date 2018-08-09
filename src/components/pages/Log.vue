@@ -42,6 +42,7 @@
         <el-footer>
             <el-pagination
               @current-change="handleCurrentChange"
+               :current-page.sync="logPage"
               :page-size="10"
               layout="prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
@@ -82,7 +83,8 @@ export default {
                 '任务发布', '任务驳回', '任务完成', '审核完成','任务转移'
             ],
             logTable: [],
-            pageCount: 0
+            pageCount: 0,
+            logPage: 1
         }
     },
     components: {
@@ -123,6 +125,7 @@ export default {
         submitForm() {
             this.logForm.pageIndex = 1
             this.getLogTable()
+            this.logPage = 1
         },
         resetForm() {
             this.logForm = {

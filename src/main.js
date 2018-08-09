@@ -3,7 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { Input, Button, Icon, Container, Header, Main, Aside, Footer, Menu, MenuItem, Submenu, Form, FormItem, Select, Option, DatePicker, Table, TableColumn, Tag, Pagination, Loading, Dialog, Breadcrumb, BreadcrumbItem, Checkbox, Collapse, CollapseItem } from 'element-ui'
+import { Input, Button, Icon, Container, Header, Main, Aside, Footer, Menu, MenuItem, Submenu, Form, FormItem, Select, Option, DatePicker, Table, TableColumn, Tag, Pagination, Loading, Dialog, Breadcrumb, BreadcrumbItem, Checkbox, Collapse, CollapseItem, Slider, OptionGroup } from 'element-ui'
 
 Vue.config.productionTip = false
 Vue.use(Input)
@@ -33,6 +33,8 @@ Vue.use(BreadcrumbItem)
 Vue.use(Checkbox)
 Vue.use(Collapse)
 Vue.use(CollapseItem)
+Vue.use(Slider)
+Vue.use(OptionGroup)
 
 /* eslint-disable no-new */
 new Vue({

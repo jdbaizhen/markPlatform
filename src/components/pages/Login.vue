@@ -126,8 +126,10 @@ export default {
   border: none;
   width: 100%;
   height: 40px;
+  color: #fff;
 }
 .login-btn:hover{
   background: rgba(0,238,118,0.5);
+  color: #fff;
 }
 </style>

@@ -46,9 +46,14 @@
                             >进行中
                         </el-tag>
                         <el-tag
-                            v-else="scope.row.status == '2'"
+                            v-else-if="scope.row.status == '2'"
                             type="success"
-                            >已完成
+                            >标注完成
+                        </el-tag>
+                        <el-tag
+                            v-else-if="scope.row.status == '3'"
+                            type="success"
+                            >审核完成
                         </el-tag>
                     </template>
                 </el-table-column>
@@ -95,6 +100,7 @@
         <el-footer>
             <el-pagination
               @current-change="handleCurrentChange"
+              :current-page.sync="taskDetailPage"
               :page-size="10"
               layout="prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
@@ -136,10 +142,12 @@ export default {
             imgStatus: [
                 { label: '未标注', value: 0 },
                 { label: '进行中', value: 1 },
-                { label: '已完成', value: 2 },
+                { label: '标注完成', value: 2 },
+                { label: '审核完成', value: 3 },
             ],
             taskDetailTable: [],
             pageCount: 0,
+            taskDetailPage: 1,
             showImageVisiable: false, //查看大图
             showImageInfo: {
                 height: '',
@@ -188,6 +196,7 @@ export default {
         submitForm() {
             this.taskDetailForm.pageIndex = 1
             this.getTaskDetailTable()
+            this.taskDetailPage = 1
         },
         resetForm() {
             this.taskDetailForm.imgname = ''

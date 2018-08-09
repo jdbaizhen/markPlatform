@@ -103,9 +103,7 @@ export default {
 }
 </script>
 <style>
-.logo-container{
-    margin-right: 30% !important;
-}
+
 .nav-admin{
     float: right !important;
     width: 50px;

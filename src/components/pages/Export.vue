@@ -74,6 +74,7 @@
         <el-footer>
             <el-pagination
               @current-change="handleCurrentChange"
+              :current-page.sync="exportPage"
               :page-size="10"
               layout="prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
@@ -111,6 +112,7 @@ export default {
             },
             exportTable: [],
             pageCount: 0,
+            exportPage: 1,
             checkedList: [],
             beginExport: ''
         }
@@ -153,6 +155,7 @@ export default {
         submitForm() {
              this.exportForm.pageIndex = 1
              this.getExportTable()
+             this.exportPage = 1
         },
         resetForm() {
             this.exportForm = {

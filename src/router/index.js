@@ -8,8 +8,8 @@ import Audit from '@/components/pages/Audit'
 import Log from '@/components/pages/Log'
 import Export from '@/components/pages/Export'
 import Photo from '@/components/pages/Photo'
-// import ClothesType from '@/components/pages/ClothesType'
-// import ClothesTypeAudit from '@/components/pages/ClothesTypeAudit'
+import ClothesType from '@/components/pages/ClothesType'
+import ClothesTypeAudit from '@/components/pages/ClothesTypeAudit'
 
 Vue.use(Router)
 
@@ -54,17 +54,17 @@ export default new Router({
           path: 'photo',
           name: 'Photo',
           component: Photo
-        }
-        // {
-        //   path: 'clothestype',
-        //   name: 'ClothesType',
-        //   component: ClothesType
-        // },
-        // {
-        //   path: 'clothestypeaudit',
-        //   name: 'ClothesTypeAudit',
-        //   component: ClothesTypeAudit
-        // }                    
+        },
+        {
+          path: 'clothestype',
+          name: 'ClothesType',
+          component: ClothesType
+        },
+        {
+          path: 'clothestypeaudit',
+          name: 'ClothesTypeAudit',
+          component: ClothesTypeAudit
+        }                    
       ]
     }
   ]

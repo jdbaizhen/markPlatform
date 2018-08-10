@@ -3,7 +3,8 @@ const URL = {
     getSquareImg: '/squareImage/index',
     submitSquare: '/squareImage/submit',
     auditSquare: '/squareImage/checkIndex',
-    auditPassSquare: '/squareImage/checkPass'
+    auditPassSquare: '/squareImage/checkPass',
+    auditRejectSquare: '/squareImage/checkReject'
 }
 
 module.exports = URL

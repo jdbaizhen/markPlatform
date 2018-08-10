@@ -102,7 +102,7 @@
               @current-change="handleCurrentChange"
               :current-page.sync="taskDetailPage"
               :page-size="10"
-              layout="prev, pager, next, jumper"
+              layout="total, prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
         </el-footer>
     </el-container>

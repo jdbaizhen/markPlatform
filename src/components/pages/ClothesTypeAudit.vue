@@ -1,17 +1,21 @@
 <template>
     <el-container>
         <el-header class="clothes-header">
-             <div class="slider-container">
-                <el-slider class="slider-control" :min="sliderOption.min" :max="sliderOption.max" v-model="sliderOption.initvalue" @change="changeImgSize"></el-slider>
+            <div class="img-count-size">
+                <el-tag>图片数: {{imgSize.imgCount}}</el-tag>
             </div>
-            <el-tag class="img-count-size">图片数: {{imgSize.imgCount}}</el-tag>
-            <!-- <el-button type="default">上一张</el-button>
-            <el-button type="default">上一张</el-button> -->
             <div class="submit-type">
                 <el-tag v-for="(item, index) in imgSize.imgInfo" :key="index">{{item.featureType}}</el-tag>
-                <el-button type="success" @click="passImage">通过</el-button>
-                <el-button type="danger">驳回</el-button>
+                <el-button type="success" size="mini" @click="passImage">通过</el-button>
+                <el-button type="danger" size="mini" @click="rejectImage">驳回</el-button>
             </div> 
+            <div class="slider-container">
+                <el-slider class="slider-control" :min="sliderOption.min" :max="sliderOption.max" v-model="sliderOption.initvalue" @change="changeImgSize"></el-slider>
+            </div>
+            
+            <!-- <el-button type="default">上一张</el-button>
+            <el-button type="default">上一张</el-button> -->
+            
         </el-header>
         <el-main class="clothes-main">
             <img :src="imgSize.imgpath" :width="imgSize.imgWidth" :height="imgSize.imgHeight" class="img-border-info">
@@ -109,6 +113,24 @@ export default {
                }
             })
         },
+        rejectImage() {
+            let imgId = this.imgSize.imgId
+            let params = dataFarmat({ squareImageId: imgId})
+            if(confirm('确认驳回？')){
+                axios({
+                    url: url.auditRejectSquare,
+                    method: 'post',
+                    data: params
+                }).then( res => {
+                    if(res.data.result){
+                        Message.success('驳回成功')
+                        this.getImage()
+                    }else{
+                        Message.error(res.data.message)
+                    }
+                })
+            }       
+        },
         changeImgSize() {
             let sliderValue = this.sliderOption.initvalue
             let width = 320/100*sliderValue
@@ -122,27 +144,26 @@ export default {
 
 <style>
 .clothes-header{
-    background: rgba(0,0,0,.7);
     text-align: center;
     line-height: 60px;
 }
 .img-count-size{
-    width: 200px;
-    height: 40px;
-    line-height: 40px;
+    float: left;
+    height: 60px;
+    line-height: 60px;
     padding: 0px 20px;
-    font-size: 18px;
+    font-size: 22px;
 }
 .submit-type{
     text-align: left;
-    width: 500px;
-    float: right;
+    min-width: 300px;
+    float: left;
 }
 .slider-container{
     float: left;
+    margin: 10px 20px;
     height: 40px;
-    width: 450px;
-    line-height: 40px;
+    width: 300px;
 }
 .clothes-type{
     height: 40px;

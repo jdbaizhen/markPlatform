@@ -9,11 +9,11 @@
                 <el-form-item label="">
                     <el-input v-model="auditForm.name" placeholder="任务名称"></el-input>
                 </el-form-item>
-                <!-- <el-form-item label="">
+                <el-form-item label="">
                     <el-select v-model="auditForm.taskType" placeholder="任务类型"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
-                </el-form-item> -->
+                </el-form-item>
                 <el-form-item label="">
                     <el-input v-model="auditForm.username" placeholder="标注人员"></el-input>
                 </el-form-item>
@@ -37,12 +37,12 @@
                 width="100%"
             >
                 <el-table-column prop="id" label="#"></el-table-column>
-                <!-- <el-table-column prop="taskType" label="任务类型">
+                <el-table-column prop="taskType" label="任务类型">
                     <template slot-scope="scope">
                         <span v-if="scope.row.taskType == '1'">24小图标注</span>
                         <span v-else>矩形标注</span>
                     </template>
-                </el-table-column> -->
+                </el-table-column>
                 <el-table-column prop="name" label="任务名称"></el-table-column>
                 <el-table-column prop="count" label="标记数量"></el-table-column>
                 <el-table-column prop="publishTime" label="发布时间"></el-table-column>
@@ -73,7 +73,7 @@
                 <el-table-column label="操作">
                     <template slot-scope="scope">
                         <el-button type="text" v-show="scope.row.taskType != '1'" size="small" @click="goAuditPhoto(scope.row.id)">审 核</el-button>
-                        <!-- <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="text" v-show="scope.row.taskType == '1'" size="small">审 核</el-button></router-link> -->
+                        <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="text" v-show="scope.row.taskType == '1'" size="small">审 核</el-button></router-link>
                     </template>
                 </el-table-column>
             </el-table>
@@ -83,7 +83,7 @@
               @current-change="handleCurrentChange"
               :current-page.sync="aduitPage"
               :page-size="10"
-              layout="prev, pager, next, jumper"
+              layout="total, prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
         </el-footer>
     </el-container>
@@ -119,7 +119,7 @@ export default {
                 pageIndex: 1
             },
             taskStatusList: [
-                { label: '任务驳回', value: 0 },
+                { label: '任务驳回', value: 5 },
                 { label: '审核完成', value: 3 },
             ],
             taskTypes: [

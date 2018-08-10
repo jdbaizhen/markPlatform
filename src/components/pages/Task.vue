@@ -9,11 +9,14 @@
                 <el-form-item label="">
                     <el-input v-model="taskForm.name" placeholder="执行人"></el-input>
                 </el-form-item>
-                <!-- <el-form-item label="">
+                <el-form-item label="">
+                    <el-input v-model="taskForm.id" placeholder="任务代号"></el-input>
+                </el-form-item>
+                <el-form-item label="">
                     <el-select v-model="taskForm.taskType" placeholder="任务类型"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
-                </el-form-item> -->
+                </el-form-item>
                 <el-form-item label="">
                     <el-select v-model="taskForm.status" placeholder="选择任务状态">
                         <el-option v-for="item in taskStatus" :key="item.value" :value="item.value" :label="item.label"></el-option>
@@ -46,12 +49,12 @@
             >
                 <el-table-column prop="id" label="#" width="80"></el-table-column>
                 <el-table-column prop="username" label="账户" width="150"></el-table-column>
-                <!-- <el-table-column prop="taskType" label="任务类型" width="150">
+                <el-table-column prop="taskType" label="任务类型" width="150">
                     <template slot-scope="scope">
                         <span v-if="scope.row.taskType == '0'">矩形标注</span>
                         <span v-else-if="scope.row.taskType == '1'">24小图标注</span>
                     </template>
-                </el-table-column> -->
+                </el-table-column>
                 <el-table-column prop="tName" label="任务名" width="150"></el-table-column>
                 <el-table-column prop="count" label="标注数量" width="150"></el-table-column>
                 <el-table-column prop="publishTime" label="发布时间" width="220"></el-table-column>
@@ -73,9 +76,13 @@
                         type="warning"
                         disable-transitions>审核完成</el-tag>
                          <el-tag
-                        v-else="scope.row.status == '4'"
+                        v-else-if="scope.row.status == '4'"
                         type="success"
                         disable-transitions>导出完成</el-tag>
+                        <el-tag
+                        v-else="scope.row.status == '5'"
+                        type="danger"
+                        disable-transitions>任务被驳回</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="标注人员" width="150"></el-table-column>
@@ -104,7 +111,7 @@
                 </el-table-column>
                 <el-table-column prop="status" label="修改任务状态" width="200" align="center">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
+                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 5" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">标注完成</el-option>
                         </el-select>
                         <span v-else><i class="el-icon-circle-close-outline"></i></span>
@@ -112,9 +119,9 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="200">
                     <template slot-scope="scope">
-                        <el-button type="text" size="small" v-show="scope.row.status == '0'" @click="receiveTask(scope.row.id)">领取</el-button>
-                        <!-- <el-button type="text" size="small" v-show="scope.row.status == '1'&&scope.row.taskType== '0'" @click="window.location.href='./index.html'">标注</el-button> -->
-                        <!-- <router-link :to="{path:'clothestype',query: {id: scope.row.id}}" v-show="scope.row.status == '1'&&scope.row.taskType== '1'"><el-button type="text" size="small" >标注</el-button></router-link> -->
+                        <el-button type="text" size="small" v-show="scope.row.status == '0' || scope.row.status == 5" @click="receiveTask(scope.row.id, scope.row.status)">领取</el-button>
+                        <el-button type="text" size="small" v-show="scope.row.status == '1'&&scope.row.taskType== '0'" @click="window.location.href='./index.html'">标注</el-button>
+                        <router-link :to="{path:'clothestype',query: {id: scope.row.id}}" v-show="scope.row.status == '1'&&scope.row.taskType== '1'"><el-button type="text" size="small" >标注</el-button></router-link>
                         <router-link :to="{path:'/taskdetail',query: {id: scope.row.id}}"><el-button type="text" size="small" >任务详情</el-button></router-link>
                         <el-button type="text" size="small" @click="deleteTask(scope.row)">删除</el-button>
                     </template>
@@ -130,11 +137,11 @@
                     <el-form-item label="任务名称" required>
                         <el-input v-model="publishTaskForm.name" placeholder="任务名称"></el-input>
                     </el-form-item>
-                    <!-- <el-form-item label="任务类型" required>
+                    <el-form-item label="任务类型" required>
                         <el-select v-model="publishTaskForm.taskType" placeholder="任务类型"> 
                             <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                         </el-select>
-                    </el-form-item> -->
+                    </el-form-item>
                     <el-form-item label="标注数量" required>
                         <el-input v-model="publishTaskForm.count" type="number" placeholder="标注数量"></el-input>
                     </el-form-item>
@@ -155,7 +162,7 @@
               @current-change="handleCurrentChange"
               :page-size="10"
               :current-page.sync="taskPage"
-              layout="prev, pager, next, jumper"
+              layout="total, prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
         </el-footer>
     </el-container>
@@ -185,6 +192,7 @@ export default {
             taskForm: {
                 username: '',
                 name: '',
+                id: '',
                 taskType: '',
                 status: '',
                 personStatus: '',
@@ -196,6 +204,7 @@ export default {
                 { label: '未领取', value: '0' },
                 { label: '处理中', value: '1' },
                 { label: '标注完成', value: '2' },
+                { label: '任务驳回', value: '5' },
                 { label: '审核完成', value: '3' },
                 { label: '导出完成', value: '4' },
             ],
@@ -269,8 +278,8 @@ export default {
             }   
         },
         //领取任务
-        receiveTask(personId) {
-            let params = dataFarmat({id: personId})
+        receiveTask(personId, taskStatus) {
+            let params = dataFarmat({id: personId, status: taskStatus})
             axios({
                 url: url.receiveTask,
                 method: 'post',
@@ -344,6 +353,7 @@ export default {
            this.taskForm = {
                 username: '',
                 name: '',
+                id: '',
                 status: '',
                 taskType: '',
                 personStatus: '',

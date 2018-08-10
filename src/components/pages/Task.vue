@@ -9,6 +9,9 @@
                 <el-form-item label="">
                     <el-input v-model="taskForm.name" placeholder="执行人"></el-input>
                 </el-form-item>
+                <el-form-item label="">
+                    <el-input v-model="taskForm.id" placeholder="任务代号"></el-input>
+                </el-form-item>
                 <!-- <el-form-item label="">
                     <el-select v-model="taskForm.taskType" placeholder="任务类型"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
@@ -155,7 +158,7 @@
               @current-change="handleCurrentChange"
               :page-size="10"
               :current-page.sync="taskPage"
-              layout="prev, pager, next, jumper"
+              layout="total, prev, pager, next, jumper"
               :total="pageCount"></el-pagination>
         </el-footer>
     </el-container>
@@ -185,6 +188,7 @@ export default {
             taskForm: {
                 username: '',
                 name: '',
+                id: '',
                 taskType: '',
                 status: '',
                 personStatus: '',

@@ -66,7 +66,8 @@
                 <el-table-column prop="status" label="修改任务状态">
                     <template slot-scope="scope">
                          <el-select v-model="changeTaskStatus" size="mini" class="uniftyWidth" @change="changeTaskState(scope.row.id)">
-                            <el-option v-for="(item, index) in taskStatusList" :key="index" :label="item.label" :value="item.value"></el-option>
+                            <el-option value="3">审核完成</el-option>
+                            <el-option v-show="scope.row.taskType != 1" value="5">任务驳回</el-option>
                         </el-select>
                     </template>
                 </el-table-column>
@@ -119,8 +120,8 @@ export default {
                 pageIndex: 1
             },
             taskStatusList: [
-                { label: '任务驳回', value: 5 },
-                { label: '审核完成', value: 3 },
+                { label: '任务驳回', value: 5},
+                { label: '审核完成', value: 3},
             ],
             taskTypes: [
                 { label: '矩形标注', value: 0 },

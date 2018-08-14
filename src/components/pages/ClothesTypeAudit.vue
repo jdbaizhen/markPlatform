@@ -1,20 +1,36 @@
 <template>
     <el-container>
         <el-header class="clothes-header">
-            <div class="img-count-size">
-                <el-tag>图片数: {{imgSize.imgCount}}</el-tag>
-            </div>
-            <div class="submit-type">
-                <el-tag v-for="(item, index) in imgSize.imgInfo" :key="index">{{item.featureType}}</el-tag>
-                <el-button type="success" size="mini" @click="passImage">通过</el-button>
-                <el-button type="danger" size="mini" @click="rejectImage">驳回</el-button>
-            </div> 
+
+            <el-tag class="img-count-size">剩余图片数: {{imgSize.imgCount}}</el-tag>
+
             <div class="slider-container">
                 <el-slider class="slider-control" :min="sliderOption.min" :max="sliderOption.max" v-model="sliderOption.initvalue" @change="changeImgSize"></el-slider>
             </div>
-            
-            <!-- <el-button type="default">上一张</el-button>
-            <el-button type="default">上一张</el-button> -->
+            <div class="submit-type-right">
+                <el-select
+                    v-model="clothesChose"
+                    multiple
+                    size="mini" 
+                    placeholder="请选择衣物类型"
+                    class="clothes-type"
+                >
+                    <el-option-group
+                        v-for="(item, index) in clothesTypeOne"
+                        :key="item.clothesId"
+                        :label="item.clothesType"    
+                    >
+                        <el-option 
+                            v-for="(ite, ind) in item.clothesFeatureList"
+                            :key="ite.featureId"
+                            :label="ite.featureType"
+                            :value="ite.featureId"
+                        ></el-option>
+                    </el-option-group>
+                </el-select>
+                <el-button type="info" size="mini" @click="rejectImage">修改提交</el-button>
+                <el-button type="success" size="mini" @click="passImage">通过</el-button>
+            </div> 
             
         </el-header>
         <el-main class="clothes-main">
@@ -39,6 +55,8 @@ export default {
                 background: 'rgba(0, 0, 0, 0.7)'
             },
             taskId: 'undefined',
+            clothesTypeOne: [],
+            clothesChose: [],
             sliderOption: {
                 initvalue: 250,
                 max: 500,
@@ -57,9 +75,21 @@ export default {
     created() {
         let taskId = this.$route.query.id
         this.taskId = taskId
+        this.getClothesTypeOne()
         this.getImage()
     },
     methods: {
+        getClothesTypeOne() {
+            axios({
+                url: url.clothesTypeOne,
+                method: 'get'
+            }).then( res => {
+                if(res.data.result) {
+                    let clothesTypeOne = JSON.parse(res.data.data)
+                    this.clothesTypeOne = clothesTypeOne
+                }
+            })
+        },
         getImage() {
             const loading = this.$loading(this.loading);
             let taskId = this.taskId
@@ -73,10 +103,22 @@ export default {
                         imgId: data.squareImageId,                       
                         imgpath: data.squareImagePath,
                         imgCount: data.countPage,
-                        imgInfo: data.clothesFeatureList,
+                        imgInfo: data.clothesTypeList,
                         imgWidth: 960,
                         imgHeight: 720
                     }
+                    let newFeature = []
+                    if(data.clothesTypeList.length != 0){
+                        data.clothesTypeList.forEach((value, index) => {
+                            value.clothesFeatureList.forEach((val,ite) => {
+                            newFeature.push(val.featureId)
+                        })
+                            this.clothesChose = newFeature
+                        }) 
+                    }else{
+                         this.clothesChose = []
+                    }
+   
                     loading.close()
                 }else if(res.data.result && res.data.code == '007'){
                     this.imgSize = {
@@ -86,6 +128,7 @@ export default {
                         imgWidth: 960,
                         imgHeight: 720
                     }
+                    this.clothesChose = []
                     loading.close()
                 }else{
                     Message.error(res.data.message)
@@ -96,10 +139,15 @@ export default {
         passImage() {
             let imgId = this.imgSize.imgId
             let feature = this.imgSize.imgInfo
+            console.log(feature)
             let newFeature = []
-            feature.forEach((value,index) => {
-                newFeature.push(value.featureId)
-            })
+            if(feature != []) {
+                feature.forEach((value,index) => {
+                    value.clothesFeatureList.forEach((val,ite) => {
+                        newFeature.push(val.featureId)
+                    })
+                })
+            }           
             let params = dataFarmat({squareImageId: imgId, featureId: newFeature})
             axios({
                 url: url.auditPassSquare,
@@ -115,15 +163,16 @@ export default {
         },
         rejectImage() {
             let imgId = this.imgSize.imgId
-            let params = dataFarmat({ squareImageId: imgId})
-            if(confirm('确认驳回？')){
+            let featureId = this.clothesChose
+            let params = dataFarmat({ squareImageId: imgId, featureId: featureId })
+            if(confirm('确认修改？')){
                 axios({
                     url: url.auditRejectSquare,
                     method: 'post',
                     data: params
                 }).then( res => {
                     if(res.data.result){
-                        Message.success('驳回成功')
+                        Message.success('修改成功')
                         this.getImage()
                     }else{
                         Message.error(res.data.message)
@@ -148,26 +197,24 @@ export default {
     line-height: 60px;
 }
 .img-count-size{
-    float: left;
-    height: 60px;
-    line-height: 60px;
+    height: 40px;
+    line-height: 40px;
     padding: 0px 20px;
-    font-size: 22px;
+    font-size: 18px;
 }
-.submit-type{
+.submit-type-right{
     text-align: left;
-    min-width: 300px;
-    float: left;
+    width: 45%;
+    float: right;
 }
 .slider-container{
     float: left;
     margin: 10px 20px;
     height: 40px;
-    width: 300px;
+    width: 35%;
 }
 .clothes-type{
-    height: 40px;
-    width: 450px;
+    width: 70%;
 }
 .clothes-main{
     position: fixed;

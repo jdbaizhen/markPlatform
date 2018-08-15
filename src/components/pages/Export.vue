@@ -9,6 +9,11 @@
                 <el-form-item>
                     <el-input v-model="exportForm.name" placeholder="标注人员"></el-input>
                 </el-form-item>
+                <el-form-item label="">
+                    <el-select v-model="exportForm.taskType" placeholder="任务类型"> 
+                        <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-input v-model="exportForm.tName" placeholder="任务名称"></el-input>
                 </el-form-item>
@@ -101,6 +106,10 @@ export default {
                 { path: '', name: '批量导出'},
                 { path: '', name: '列表'}
             ],
+            taskTypes: [
+                { label: '矩形标注', value: 0 },
+                { label: '24小图标注', value: 1 }
+            ],   
             exportForm: {
                 username: '',
                 name: '',
@@ -108,6 +117,7 @@ export default {
                 status: '',
                 beginTime: '',
                 endTime: '',
+                taskType: 0,
                 pageIndex: 1
             },
             exportTable: [],
@@ -162,6 +172,7 @@ export default {
                 username: '',
                 name: '',
                 tName: '',
+                taskType: 0,
                 status: '',
                 beginTime: '',
                 endTime: '',
@@ -175,7 +186,7 @@ export default {
                     this.checkedList.push(item.id)
                 })
             }
-            this.beginExport = '/export/checkTask?id='+this.checkedList
+            this.beginExport = `/export/checkTask?id=${this.checkedList}&taskType=${this.exportForm.taskType}`
         },
         handleCurrentChange(val) { 
             this.exportForm.pageIndex = val;

@@ -61,7 +61,7 @@
                 
             </el-table>
             <el-dialog
-                title="查看大图"
+                :title="`负载量：${showImageInfo.clothesCapacity}`"
                 :visible.sync="showImageVisiable"
                 width="1240px"
             >
@@ -157,11 +157,13 @@ export default {
                 imgId: '',
                 imgpath: '',
                 nextImgId: '',
-                preImgId: ''
+                preImgId: '',
+                clothesCapacity: ''
             },
             scale: 0,
             svgHeight: 0,
-            deleteImageRole: false
+            deleteImageRole: false,
+            lastImage: true
         }
     },
     components: {
@@ -215,36 +217,53 @@ export default {
             this.getTaskDetailTable()
         },
         showImage(imgId) {
-            let tid = this.taskDetailForm.id
-            let params = dataFarmat({tid: tid, imgId: imgId})
-            axios({
-                url: url.getImagePath+'?'+params,
-                method: 'get'
-            }).then( res => {
-                if(res.data.result){
-                    if(res.data.code == '001'){
-                        this.showImageInfo = {
-                            height: '',
-                            width: '',
-                            imgId: '',
-                            imgpath: '',
-                            nextImgId: '',
-                            preImgId: ''
+            if(this.lastImage){
+                let tid = this.taskDetailForm.id
+                let params = dataFarmat({tid: tid, imgId: imgId})
+                axios({
+                    url: url.getImagePath+'?'+params,
+                    method: 'get'
+                }).then( res => {
+                    if(res.data.result){
+                        if(res.data.code == '007'){
+                            this.lastImage = false
                         }
-                         this.showImageVisiable = false     
-                         Message.info('无更多图片')
+                        if(res.data.code == '001'){
+                            this.showImageInfo = {
+                                height: '',
+                                width: '',
+                                imgId: '',
+                                imgpath: '',
+                                nextImgId: '',
+                                preImgId: ''
+                            }
+                            this.showImageVisiable = false     
+                            Message.info(res.data.message)
+                        }else{
+                            let data = JSON.parse(res.data.data)
+                            this.showImageInfo = data
+                            this.scale = 1200/data.width
+                            this.svgHeight = this.scale*data.height
+                            this.showImageVisiable = true     
+                        } 
+                        this.getTaskDetailTable()   
                     }else{
-                        let data = JSON.parse(res.data.data)
-                        this.showImageInfo = data
-                        this.scale = 1200/data.width
-                        this.svgHeight = this.scale*data.height
-                        this.showImageVisiable = true     
-                    } 
-                    this.getTaskDetailTable()   
-                }else{
-                    Message.error(res.data.message)
+                        Message.error(res.data.message)
+                    }
+                })
+            }else{
+                this.showImageInfo = {
+                       height: '',
+                    width: '',
+                    imgId: '',
+                    imgpath: '',
+                    nextImgId: '',
+                    preImgId: ''
                 }
-            })
+                this.showImageVisiable = false     
+                Message.info('已经是最后一张图片')
+                this.lastImage = true
+            }
         },
         showImageCancel() {
             this.showImageVisiable = false

@@ -109,6 +109,7 @@
                     <template slot-scope="scope">
                         <el-select v-if="scope.row.status == 0 || scope.row.status == 1" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">标注完成</el-option>
+                            <el-option v-show="task_verify" value="3">审核完成</el-option>
                         </el-select>
                         <span v-else><i class="el-icon-circle-close-outline"></i></span>
                     </template>
@@ -225,7 +226,8 @@ export default {
                 { label: '24小图标注', value: 1 }
             ],      
             update_status: false,
-            save_task: false,      
+            save_task: false,    
+            task_verify: false  
         }
     },
     components: {
@@ -240,6 +242,9 @@ export default {
             }
             if(roleString.indexOf('save_task') != -1){
                 this.save_task = true
+            }
+            if(roleString.indexOf('task_verify') != -1){
+                this.task_verify = true
             }
         }  
         if(isLogin){

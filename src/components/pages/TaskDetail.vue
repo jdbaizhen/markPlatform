@@ -28,6 +28,7 @@
             >
                 <el-table-column prop="id" label="#"></el-table-column>
                 <el-table-column prop="imgname" label="图片名"></el-table-column>
+                <el-table-column prop="clothesCapacity" label="负载量"></el-table-column>
                 <el-table-column prop="imgpath" label="图片展示">
                     <template slot-scope="scope">
                         <img :src="scope.row.imgpath" alt="image" width="40%" @click="showImage(scope.row.imgId)">
@@ -57,6 +58,7 @@
                         </el-tag>
                     </template>
                 </el-table-column>
+                
             </el-table>
             <el-dialog
                 title="查看大图"
@@ -91,7 +93,7 @@
 				</svg>
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="showImage(showImageInfo.preImgId)">上一张</el-button>
-                    <el-button @click="showImageCancel">取 消</el-button>
+                    <el-button type="danger" @click="deletePic" v-show="deleteImageRole">删 除</el-button>
                     <el-button type="primary" @click="toggoleSvg">轨 迹</el-button>
                     <el-button @click="showImage(showImageInfo.nextImgId)">下一张</el-button>
                 </span>
@@ -158,7 +160,8 @@ export default {
                 preImgId: ''
             },
             scale: 0,
-            svgHeight: 0
+            svgHeight: 0,
+            deleteImageRole: false
         }
     },
     components: {
@@ -171,6 +174,10 @@ export default {
     },
     mounted() {
         let isLogin = getSession('isLogin');
+        let roleString = getSession('role');
+        if(roleString.indexOf('taskdetail_delete') != -1){
+            this.deleteImageRole = true
+        }
         if(isLogin){
             this.getTaskDetailTable()
         }
@@ -215,11 +222,25 @@ export default {
                 method: 'get'
             }).then( res => {
                 if(res.data.result){
-                    let data = JSON.parse(res.data.data)
-                    this.showImageInfo = data
-                    this.scale = 1200/data.width
-                    this.svgHeight = this.scale*data.height
-                    this.showImageVisiable = true     
+                    if(res.data.code == '001'){
+                        this.showImageInfo = {
+                            height: '',
+                            width: '',
+                            imgId: '',
+                            imgpath: '',
+                            nextImgId: '',
+                            preImgId: ''
+                        }
+                         this.showImageVisiable = false     
+                         Message.info('无更多图片')
+                    }else{
+                        let data = JSON.parse(res.data.data)
+                        this.showImageInfo = data
+                        this.scale = 1200/data.width
+                        this.svgHeight = this.scale*data.height
+                        this.showImageVisiable = true     
+                    } 
+                    this.getTaskDetailTable()   
                 }else{
                     Message.error(res.data.message)
                 }
@@ -230,6 +251,24 @@ export default {
         },
         toggoleSvg() {
             this.svgShow = !this.svgShow
+        },
+        deletePic() {
+            let tid = this.taskDetailForm.id
+            let imgId = this.showImageInfo.imgId
+            let nextImgId = this.showImageInfo.nextImgId
+            if(confirm('确认删除？')){
+                axios({
+                    url: `${url.deleteImage}?imgId=${imgId}&tid=${tid}`,
+                    method: 'get'
+                }).then( res => {
+                    if(res.data.result){
+                        Message.success('删除成功')
+                        this.showImage(nextImgId)
+                    }else{
+                        Message.error(res.data.message)
+                    }
+                })
+            }
         }
     }
 }

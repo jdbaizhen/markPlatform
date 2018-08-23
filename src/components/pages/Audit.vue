@@ -7,30 +7,30 @@
                 v-model="auditForm"
             >
                 <el-form-item label="">
-                    <el-input v-model="auditForm.name" placeholder="任务名称"></el-input>
+                    <el-input v-model="auditForm.name" placeholder="任务名称" size="small"></el-input>
                 </el-form-item>
                 <!-- <el-form-item label="">
-                    <el-select v-model="auditForm.taskType" placeholder="任务类型"> 
+                    <el-select v-model="auditForm.taskType" placeholder="任务类型" size="small"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
                 </el-form-item> -->
                 <el-form-item label="">
-                    <el-input v-model="auditForm.username" placeholder="标注人员"></el-input>
+                    <el-input v-model="auditForm.username" placeholder="标注人员" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-date-picker v-model="auditForm.beginTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
+                    <el-date-picker v-model="auditForm.beginTime" type="datetime" size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
                 </el-form-item>
                  <el-form-item label="">
-                    <el-date-picker v-model="auditForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
+                    <el-date-picker v-model="auditForm.endTime" type="datetime" size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
                 </el-form-item>
-                <el-form-item label="">
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
+                <el-form-item label="" class="search-btn-group">
+                    <el-button type="primary" size="small" icon="el-icon-search" @click="submitForm"></el-button>
+                    <el-button type="warning" size="small" @click="resetForm">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
-        <el-main>
-            <Breadcrumb :data="listBreadcrumb"></Breadcrumb>
+        <el-main class="main-table">
+            <!-- <Breadcrumb :data="listBreadcrumb"></Breadcrumb> -->
             <el-table
                 v-loading="loading"
                 :data="auditTable"
@@ -80,6 +80,7 @@
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
               :current-page.sync="aduitPage"
               :page-size="10"
@@ -103,7 +104,7 @@ export default {
             searchBreadcrumb: [
                 { path: '/task', name: '任务管理'},
                 { path: '/aduit', name: '审核列表'},
-                { path: '', name: '搜索'}
+                // { path: '', name: '搜索'}
             ],
             listBreadcrumb: [
                 { path: '/task', name: '任务管理'},

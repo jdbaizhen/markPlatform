@@ -4,21 +4,21 @@
             <breadcrumb :data="searchBreadcrumb"></breadcrumb>
             <el-form :inline="true" v-model="taskDetailForm">
                 <el-form-item label="">
-                    <el-input v-model="taskDetailForm.imgname" placeholder="图片名"></el-input>
+                    <el-input v-model="taskDetailForm.imgname" placeholder="图片名" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskDetailForm.status">
+                    <el-select v-model="taskDetailForm.status" size="small">
                         <el-option v-for="(item, index) in imgStatus" :key="index" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item >
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
+                <el-form-item class='search-btn-group'>
+                    <el-button type="primary" @click="submitForm" size="small" icon="el-icon-search"></el-button>
+                    <el-button type="warning" @click="resetForm" size="small">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
-        <el-main>
-            <breadcrumb :data="listBreadcrumb"></breadcrumb>
+        <el-main class="main-table">
+            <!-- <breadcrumb :data="listBreadcrumb"></breadcrumb> -->
             <el-table
                 :data="taskDetailTable"
                 v-loading="loading"
@@ -28,7 +28,7 @@
             >
                 <el-table-column prop="id" label="#"></el-table-column>
                 <el-table-column prop="imgname" label="图片名"></el-table-column>
-                <el-table-column prop="clothesCapacity" label="负载量"></el-table-column>
+                <!-- <el-table-column prop="clothesCapacity" label="负载量"></el-table-column> -->
                 <el-table-column prop="imgpath" label="图片展示">
                     <template slot-scope="scope">
                         <img :src="scope.row.imgpath" alt="image" width="40%" @click="showImage(scope.row.imgId)">
@@ -61,7 +61,7 @@
                 
             </el-table>
             <el-dialog
-                :title="`负载量：${showImageInfo.clothesCapacity}`"
+                title="查看大图"
                 :visible.sync="showImageVisiable"
                 width="1240px"
             >
@@ -101,6 +101,7 @@
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
               :current-page.sync="taskDetailPage"
               :page-size="10"
@@ -124,10 +125,10 @@ export default {
             loading: false,
             svgShow: true,
             searchBreadcrumb: [
-                { path: '/task', name: '任务管理'},
+                // { path: '/task', name: '任务管理'},
                 { path: '/task', name: '任务列表'},
                 { path: '/taskdetail', name: '任务详情'},
-                { path: '', name: '搜索'}
+                // { path: '', name: '搜索'}
             ],
             listBreadcrumb: [
                 { path: '/task', name: '任务管理'},

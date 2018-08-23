@@ -4,40 +4,40 @@
             <breadcrumb :data="searchBreadcrumb"></breadcrumb>
             <el-form :inline="true" v-model="exportForm">
                 <el-form-item>
-                    <el-input v-model="exportForm.username" placeholder="账号"></el-input>
+                    <el-input v-model="exportForm.username" placeholder="账号" size="small"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="exportForm.name" placeholder="标注人员"></el-input>
+                    <el-input v-model="exportForm.name" placeholder="标注人员" size="small"></el-input>
                 </el-form-item>
-                <el-form-item label="">
-                    <el-select v-model="exportForm.taskType" placeholder="任务类型"> 
+                <!-- <el-form-item label="">
+                    <el-select v-model="exportForm.taskType" placeholder="任务类型" size="small"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
+                </el-form-item> -->
+                <el-form-item>
+                    <el-input v-model="exportForm.tName" placeholder="任务名称" size="small"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="exportForm.tName" placeholder="任务名称"></el-input>
-                </el-form-item>
-                <el-form-item>
-                    <el-select v-model="exportForm.status" placeholder="任务状态">
+                    <el-select v-model="exportForm.status" placeholder="任务状态" size="small">
                         <el-option value="3" label="审核完成">审核完成</el-option>
                         <el-option value="4" label="导出完成">导出完成</el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
-                    <el-date-picker v-model="exportForm.beginTime" type="datetime" placeholder="开始时间" @change="getTime(0,$event)"></el-date-picker>
+                    <el-date-picker v-model="exportForm.beginTime" type="datetime" size="small" placeholder="开始时间" @change="getTime(0,$event)"></el-date-picker>
                 </el-form-item>
                 <el-form-item>
-                    <el-date-picker v-model="exportForm.endTime" type="datetime" placeholder="结束时间" @change="getTime(0,$event)"></el-date-picker>
+                    <el-date-picker v-model="exportForm.endTime" type="datetime" size="small" placeholder="结束时间" @change="getTime(0,$event)"></el-date-picker>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
-                    <el-button type="success"><a :href="beginExport" download class="export-btn">开始导出</a></el-button>
+                <el-form-item class="search-btn-group">
+                    <el-button type="primary" @click="submitForm" size="small" icon="el-icon-search"></el-button>
+                    <el-button type="warning" @click="resetForm" size="small">重置</el-button>
+                    <el-button type="success" size="small"><a :href="beginExport" download class="export-btn">开始导出</a></el-button>
                 </el-form-item>
             </el-form>
         </el-header>
-        <el-main>
-            <breadcrumb :data="listBreadcrumb"></breadcrumb>
+        <el-main class="main-table">
+            <!-- <breadcrumb :data="listBreadcrumb"></breadcrumb> -->
             <el-table 
                 v-loading="loading"
                 :data="exportTable"
@@ -78,6 +78,7 @@
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
               :current-page.sync="exportPage"
               :page-size="10"
@@ -100,7 +101,7 @@ export default {
             loading: false,
             searchBreadcrumb: [
                 { path: '', name: '批量导出'},
-                { path: '', name: '搜索'}
+                // { path: '', name: '搜索'}
             ],
             listBreadcrumb: [
                 { path: '', name: '批量导出'},

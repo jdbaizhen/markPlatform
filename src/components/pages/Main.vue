@@ -1,10 +1,10 @@
 <template>
     <div>
         <el-container>
-            <el-header>
+            <el-header class="nav-header">
                 <Navbar></Navbar>
             </el-header>
-            <el-main>
+            <el-main class="mains">
                 <router-view></router-view>
             </el-main>
             <el-footer>

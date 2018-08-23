@@ -4,13 +4,13 @@
             <breadcrumb :data="searchBreadcrumb"></breadcrumb>
             <el-form :inline="true" :model="taskForm" ref="taskForm" >
                 <el-form-item label="">
-                    <el-input v-model="taskForm.username" placeholder="账户"></el-input>
+                    <el-input v-model="taskForm.username" placeholder="账户"  size="small" resize="both"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-input v-model="taskForm.name" placeholder="执行人"></el-input>
+                    <el-input v-model="taskForm.name" placeholder="执行人"  size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-input v-model="taskForm.id" placeholder="任务代号"></el-input>
+                    <el-input v-model="taskForm.id" placeholder="任务代号"  size="small"></el-input>
                 </el-form-item>
                 <!-- <el-form-item label="">
                     <el-select v-model="taskForm.taskType" placeholder="任务类型"> 
@@ -18,47 +18,47 @@
                     </el-select>
                 </el-form-item> -->
                 <el-form-item label="">
-                    <el-select v-model="taskForm.status" placeholder="选择任务状态">
+                    <el-select v-model="taskForm.status" placeholder="选择任务状态"  size="small">
                         <el-option v-for="item in taskStatus" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskForm.personStatus" placeholder="选择人员状态">
+                    <el-select v-model="taskForm.personStatus" placeholder="选择人员状态"  size="small">
                         <el-option v-for="item in personStatus" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-date-picker v-model="taskForm.beginTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
+                    <el-date-picker v-model="taskForm.beginTime" type="datetime"  size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
                 </el-form-item>
                  <el-form-item label="">
-                    <el-date-picker v-model="taskForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
+                    <el-date-picker v-model="taskForm.endTime" type="datetime"  size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
-                    <el-button type="success" @click="publishTaskVisible = true" v-show="save_task">发布任务</el-button>
+                <el-form-item class='search-btn-group'>
+                    <el-button type="primary" @click="submitForm" icon="el-icon-search" size="small"></el-button>
+                    <el-button type="warning" @click="resetForm" size="small">重置</el-button>
+                    <el-button type="success" @click="publishTaskVisible = true" v-show="save_task" size="small">发布任务</el-button>
                 </el-form-item>    
             </el-form>
         </el-header>
-        <el-main>
-            <breadcrumb :data="listBreadcrumb"></breadcrumb>
+        <el-main class="main-table">
+            <!-- <breadcrumb :data="listBreadcrumb"></breadcrumb> -->
             <el-table
                  v-loading="loading"
                 :data="taskTable"
                 style="width:100%"
             >
-                <el-table-column prop="id" label="#" width="80"></el-table-column>
-                <el-table-column prop="username" label="账户" width="150"></el-table-column>
+                <el-table-column prop="id" label="#" ></el-table-column>
+                <el-table-column prop="username" label="账户" ></el-table-column>
                 <!-- <el-table-column prop="taskType" label="任务类型" width="150">
                     <template slot-scope="scope">
                         <span v-if="scope.row.taskType == '0'">矩形标注</span>
                         <span v-else-if="scope.row.taskType == '1'">24小图标注</span>
                     </template>
                 </el-table-column> -->
-                <el-table-column prop="tName" label="任务名" width="150"></el-table-column>
-                <el-table-column prop="count" label="标注数量" width="150"></el-table-column>
+                <el-table-column prop="tName" label="任务名"></el-table-column>
+                <el-table-column prop="count" label="标注数量"></el-table-column>
                 <el-table-column prop="publishTime" label="发布时间" width="220"></el-table-column>
-                <el-table-column prop="status" label="任务状态" width="140">
+                <el-table-column prop="status" label="任务状态" >
                     <template slot-scope="scope">
                         <el-tag
                         v-if="scope.row.status == '0'"
@@ -129,6 +129,7 @@
                 :visible.sync="publishTaskVisible"
                 width="30%"
                 center
+                custom-class="dialogs"
             >
                 <el-form v-model="publishTaskForm" label-position="left" label-width="100px">
                     <el-form-item label="任务名称" required>
@@ -149,13 +150,14 @@
                     </el-form-item>
                 </el-form>
                 <span slot="footer" class="dialog-footer">
-                    <el-button @click="publishTaskCancle">取 消</el-button>
+                    <el-button type="warning" @click="publishTaskCancle">取 消</el-button>
                     <el-button type="primary" @click="publishTask">确 定</el-button>
                 </span>
             </el-dialog>
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
               :page-size="10"
               :current-page.sync="taskPage"
@@ -179,7 +181,7 @@ export default {
             searchBreadcrumb: [
                 { path: '/task', name: '任务管理'},
                 { path: '/task', name: '任务列表'},
-                { path: '', name: '搜索'}
+                // { path: '', name: '搜索'}
             ],
             listBreadcrumb: [
                 { path: '/task', name: '任务管理'},
@@ -442,5 +444,8 @@ export default {
 <style>
   .uniftyWidth{
       width: 100px;
+  }
+  .dialogs{
+      z-index: 9999 !important;
   }
 </style>

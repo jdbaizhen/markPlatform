@@ -6,7 +6,11 @@ const URL = {
   changeTransferPerson: '/task/taskTransfer',
   publishTask: '/task/save',
   receiveTask: '/task/draw',
-  deleteTask: '/task/del'
+  deleteTask: '/task/del',
+  repairTask: '/task/repair',
+  repairTaskResult: '/taskDetail/repairResult',
+  repairPass: '/taskDetail/repairPass',
+  repairDelete: '/taskDetail/repairDelete'
 }
 
 module.exports = URL

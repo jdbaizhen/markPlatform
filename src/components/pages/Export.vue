@@ -19,8 +19,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-select v-model="exportForm.status" placeholder="任务状态" size="small">
-                        <el-option value="3" label="审核完成">审核完成</el-option>
-                        <el-option value="4" label="导出完成">导出完成</el-option>
+                        <el-option v-for="(item, index) in statusExport" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -32,7 +31,7 @@
                 <el-form-item class="search-btn-group">
                     <el-button type="primary" @click="submitForm" size="small" icon="el-icon-search"></el-button>
                     <el-button type="warning" @click="resetForm" size="small">重置</el-button>
-                    <el-button type="success" size="small"><a :href="beginExport" download class="export-btn">开始导出</a></el-button>
+                    <el-button type="success" class="export-btn" size="small"><a @click.stop="exportBegin" download class="export-a">开始导出</a></el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -41,10 +40,12 @@
             <el-table 
                 v-loading="loading"
                 :data="exportTable"
+                :row-key="getRowKeys"
                 width="100%"
+                ref="multipleTable"
                 @selection-change="handleSelectionChange"
             >
-                <el-table-column  type="selection"></el-table-column>
+                <el-table-column  type="selection" :reserve-selection="true"></el-table-column>
                 <el-table-column label="#" prop="id"></el-table-column>
                 <el-table-column label="账号" prop="username"></el-table-column>
                 <el-table-column label="任务名称" prop="tName"></el-table-column>
@@ -69,9 +70,17 @@
                         type="warning"
                         disable-transitions>审核完成</el-tag>
                          <el-tag
-                        v-else="scope.row.status == '4'"
+                        v-else-if="scope.row.status == '4'"
                         type="success"
                         disable-transitions>导出完成</el-tag>
+                         <el-tag
+                        v-else-if="scope.row.status == '5'"
+                        type="success"
+                        disable-transitions>修复完成</el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '6'"
+                        type="success"
+                        disable-transitions>修复审核完成</el-tag>
                     </template>
                 </el-table-column>
             </el-table>
@@ -99,6 +108,7 @@ export default {
     data() {
         return {
             loading: false,
+            btnloading: false,
             searchBreadcrumb: [
                 { path: '', name: '批量导出'},
                 // { path: '', name: '搜索'}
@@ -110,22 +120,29 @@ export default {
             taskTypes: [
                 { label: '矩形标注', value: 0 },
                 { label: '24小图标注', value: 1 }
-            ],   
+            ], 
+            statusExport: [
+                { label: '审核完成', value: 3},
+                { label: '修复审核完成', value: 6},
+            ], 
             exportForm: {
                 username: '',
                 name: '',
                 tName: '',
-                status: '',
+                status: 3,
                 beginTime: '',
                 endTime: '',
                 taskType: 0,
-                pageIndex: 1
+                pageIndex: 1,
             },
             exportTable: [],
             pageCount: 0,
             exportPage: 1,
             checkedList: [],
-            beginExport: ''
+            getRowKeys(row) {
+                return row.id;
+            },
+            ip: 'http://192.168.3.84:8666'
         }
     },
     components: {
@@ -153,7 +170,7 @@ export default {
                 }else{
                     Message.error(res.data.message)
                 }
-            })
+            })         
         },
          getTime(num, date) {
             let time = timeFormat(date)
@@ -180,18 +197,28 @@ export default {
                 pageIndex: 1
             }
         },
-        handleSelectionChange(val) {
+        handleSelectionChange(val) { 
+            this.btnloading =false; 
             this.checkedList = []
             if(val.length!==0){
                 val.forEach((item, index) => {
                     this.checkedList.push(item.id)
                 })
             }
-            this.beginExport = `/export/checkTask?id=${this.checkedList}&taskType=${this.exportForm.taskType}`
         },
         handleCurrentChange(val) { 
             this.exportForm.pageIndex = val;
             this.getExportTable()
+        },
+        exportBegin() {
+            if(this.btnloading){
+                return;
+            }
+			let url = `${this.ip}/export/checkTask?id=${this.checkedList}&status=${this.exportForm.status}`;
+            window.location.href = url;
+			console.log(url)
+            this.btnloading = true
+            this.checkedList = []
         }
     }
 }
@@ -199,6 +226,13 @@ export default {
 
 <style>
 .export-btn{
+    padding: 0px 10px;
+}
+.export-a{
+    display: inline-block;
+    height: 30px;
+    line-height: 30px;
+    width: 80px;
     text-decoration: none;
     color: #fff;
 }

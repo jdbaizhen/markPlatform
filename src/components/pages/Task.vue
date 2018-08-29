@@ -76,9 +76,17 @@
                         type="warning"
                         disable-transitions>审核完成</el-tag>
                          <el-tag
-                        v-else="scope.row.status == '4'"
+                        v-else-if="scope.row.status == '4'"
                         type="success"
                         disable-transitions>导出完成</el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '5'"
+                        type="success"
+                        disable-transitions>修复完成</el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '6'"
+                        type="success"
+                        disable-transitions>修复审核完成</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="标注人员" width="150"></el-table-column>
@@ -116,7 +124,9 @@
                 </el-table-column>
                 <el-table-column fixed="right" label="操作" width="200">
                     <template slot-scope="scope">
-                        <el-button type="text" size="small" v-show="scope.row.status == '0'" @click="receiveTask(scope.row.id)">领取</el-button>
+                        <el-button type="text" size="small" v-show="scope.row.status == '0'" @click="receiveTask(scope.row.id)">领取</el-button> 
+                        <el-button type="text" size="small" v-show="scope.row.status == '3' && save_task == true" style="margin-left:0px" @click="repairTask(scope.row.id)">修复</el-button>
+                        <el-button type="text" size="small" v-show="scope.row.status == '5' && save_task == true" style="margin-left:0px" @click="repairResult(scope.row.id)">修复结果</el-button>
                         <!-- <el-button type="text" size="small" v-show="scope.row.status == '1'&&scope.row.taskType== '0'" @click="window.location.href='./index.html'">标注</el-button> -->
                         <!-- <router-link :to="{path:'clothestype',query: {id: scope.row.id}}" v-show="scope.row.status == '1'&&scope.row.taskType== '1'"><el-button type="text" size="small" >标注</el-button></router-link> -->
                         <router-link :to="{path:'/taskdetail',query: {id: scope.row.id}}"><el-button type="text" size="small" >任务详情</el-button></router-link>
@@ -154,6 +164,55 @@
                     <el-button type="primary" @click="publishTask">确 定</el-button>
                 </span>
             </el-dialog>
+            <el-dialog
+                :title="`修改结果  负载量:${repairInfo.clothesCapacity}`"
+                :visible.sync="recoverMarkVisible"
+                width="1240px"
+                center
+            >   
+                <img :src="repairInfo.imgpath" alt="image" width="100%">
+                <svg 
+					v-show="svgShow"
+					width="1200px" :height="svgHeight" 
+					version="1.1" xmlns="http://www.w3.org/2000/svg" 
+					style="position: absolute;top: 84px;left: 20px;display: block"
+				>
+					<g v-for="(item,index) in repairInfo.squareInfoList">
+						<rect :x="item.x*scale"
+							:y="item.y*scale"
+							:width="item.w*scale"
+							:height="item.h*scale"
+							fill="none"
+							stroke="yellow"
+							strokeWidth="5"
+					  />
+                       <text :x="item.x*scale + 10"
+							  :y="item.y*scale + 20"
+                              fill="yellow"
+                              @click="changeDifficultType(item.id,item.difficultType)"
+                              >
+                              衣物类型:{{item.difficultType==0?'确定':'不确定'}}  
+                        </text>
+					  <polygon
+							:points="item.positions?item.positions.map(function(ite, ind){return ite.x*scale+','+ite.y*scale}).join(' '):''"
+							stroke="yellow"
+							fillOpacity=0.3
+							strokeWidth="5"
+							fill="none"
+						/>
+					</g>
+				</svg>
+                <span slot="footer" class="dialog-footer">
+                     <el-select v-model="fuzailiangValue" size="small" placeholder="负载量" class="fuzailiang-style" @change="changeFuZaiLiang">
+                        <el-option v-for="(item, index) in fuzaliang" :key="index" :value="item.value" :label="item.label"></el-option>
+                    </el-select>
+                    <el-button @click="postDifficultType" size="small" class="fixed-submit-btn">修改提交</el-button>
+
+                    <el-button type="danger" size="small" @click="repairDelete">删 除</el-button>
+                    <el-button type="success" size="small" @click="repairPass">通 过</el-button>
+                    <el-button type="primary" size="small" @click="repairLine">轨 迹</el-button>
+                </span>
+            </el-dialog>
         </el-main>
         <el-footer>
             <el-pagination
@@ -171,6 +230,7 @@ import Breadcrumb from '@/components/component/Breadcrumb.vue'
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import url from '@/api/task.js'
+import urlDetail from '@/api/taskDetail.js'
 import { dataFarmat, timeFormat } from '@/utils/util.js'
 import { getSession } from '@/utils/session.js'
 export default {
@@ -205,6 +265,8 @@ export default {
                 { label: '标注完成', value: '2' },
                 { label: '审核完成', value: '3' },
                 { label: '导出完成', value: '4' },
+                { label: '修复完成', value: '5' },
+                { label: '修复审核完成', value: '6' },
             ],
             personStatus: [
                 { label: '在职', value: '0' },
@@ -217,6 +279,7 @@ export default {
             newTransferPerson: '', //被派发人员
             changeTaskStatus: '', //修改后的任务状态
             publishTaskVisible: false, //发布任务模态框
+            recoverMarkVisible: false, //修复图片模态框
             publishTaskForm: {  
                 name: '',
                 taskType: '',
@@ -229,7 +292,29 @@ export default {
             ],      
             update_status: false,
             save_task: false,    
-            task_verify: false  
+            task_verify: false,
+            repairInfo: {
+                imgpath: ''
+            },
+            scale: 0,
+            svgShow: true,
+            svgHeight: 0,
+            currentTid: '', //当前tid 
+            difficultInfo: {
+                status: 1,
+                squareInfoList: [
+                    {
+                        id: '',
+                        difficultType: ''
+                    }
+                ]
+            },
+            fuzaliang: [
+                { label: '高', value: 'many'},
+                { label: '中', value: 'mid'},
+                { label: '低', value: 'few'},
+            ],
+            fuzailiangValue: ''
         }
     },
     components: {
@@ -433,10 +518,119 @@ export default {
                 })
             }
         },
+        repairTask(id) {
+            axios({
+                url: `${url.repairTask}?tid=${id}`,
+                method: 'get'
+            }).then( res => {
+                if(res.data.result) {
+                    Message.success('修复成功')
+                    this.getTaskTable()
+                }
+            })
+        },
+        repairResult(id) {
+            axios({
+                url: `${url.repairTaskResult}?tid=${id}`,
+                methods: 'get'
+            }).then( res => {
+                if(res.data.result) {
+                    this.difficultInfo.squareInfoList = []
+                    if(res.data.code == '003'){
+                        this.repairInfo = {}
+                        this.currentTid = ''
+                        this.recoverMarkVisible = false;
+                        this.getTaskTable()
+                    }else{
+                        let data = JSON.parse(res.data.data)
+                        this.repairInfo = data
+                        this.scale = 1200/data.width
+                        this.svgHeight = this.scale*data.height  
+                        this.currentTid = id
+                        this.recoverMarkVisible = true;
+                        data.squareInfoList.forEach( (value, index) => {
+                            this.difficultInfo.squareInfoList.push({id: value.id, difficultType: value.difficultType})
+                        })  
+                    }     
+                }
+            })
+        },
+        repairPost(url) {
+            let tid = this.currentTid
+            let imgId = this.repairInfo.imgId
+            let params = dataFarmat({tid: tid, imgId: imgId})
+            axios({
+                    url: url,
+                    method: 'post',
+                    data: params
+                }).then( res => {
+                    if(res.data.result){
+                        this.repairResult(tid)
+                    }else{
+                        Message.error(res.data.message)
+                    }
+                })
+        },
+        repairDelete() {
+            if(confirm('确认删除？')){
+                this.repairPost(url.repairDelete)
+            }
+        },
+        repairPass() {
+            this.repairPost(url.repairPass)
+        },
         //分页函数
         handleCurrentChange(val) { 
             this.taskForm.pageIndex = val;
             this.getTaskTable()
+        },
+        repairLine() {
+            this.svgShow = !this.svgShow
+        },
+        changeDifficultType(id, type) {
+            this.difficultInfoMap(this.repairInfo.squareInfoList, id, type);
+            this.difficultInfoMap(this.difficultInfo.squareInfoList, id, type);  
+        },
+        difficultInfoMap( arr, id, type) {
+            arr.map( (value, index) => {
+                if(id === value.id){
+                    if(type == 0){
+                        value.difficultType = 1
+                    }else{
+                        value.difficultType = 0
+                    }      
+                }
+            })
+        },
+        //修改负载量
+        changeFuZaiLiang() {
+            let imgId = this.repairInfo.imgId
+            let clothesCapacity = this.fuzailiangValue
+            let params = dataFarmat({id: imgId, clothesCapacity: clothesCapacity})
+            axios({
+                url: urlDetail.fixedClothesCapacity,
+                method: 'post',
+                data: params
+            }).then( res => {
+                if( res.data.result ){
+                    Message.success('修改负载量成功')
+                    this.repairInfo.clothesCapacity = clothesCapacity
+                    this.fuzailiangValue = ''
+                }
+            })
+        },
+        //修改fixedDifficultType
+        postDifficultType() {
+            let params = this.difficultInfo
+            axios({
+                url: urlDetail.fixedDifficultType,
+                method: 'post',
+                data: params
+            }).then( res => {
+                if( res.data.result ) {
+                    Message.success('修改成功')
+                }
+            })
         }
     }
 }
@@ -448,4 +642,5 @@ export default {
   .dialogs{
       z-index: 9999 !important;
   }
+
 </style>

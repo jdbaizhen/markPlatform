@@ -56,12 +56,28 @@
                             type="success"
                             >审核完成
                         </el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '4'"
+                        type="success"
+                        disable-transitions>导出完成</el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '5'"
+                        type="success"
+                        disable-transitions>修复完成</el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '6'"
+                        type="success"
+                        disable-transitions>修复审核完成</el-tag>
                     </template>
                 </el-table-column>
-                
+                <el-table-column label="操作">
+                    <template slot-scope="scope">
+                        <el-button type="danger" size="small" @click="handleDeleteImg(scope.row.id)">删 除</el-button>
+                    </template>      
+                </el-table-column>
             </el-table>
             <el-dialog
-                title="查看大图"
+                :title="`负载量：${showImageInfo.clothesCapacity}`"
                 :visible.sync="showImageVisiable"
                 width="1240px"
             >
@@ -71,9 +87,8 @@
 					width="1200px" :height="svgHeight" 
 					version="1.1" xmlns="http://www.w3.org/2000/svg" 
 					style="position: absolute;top: 84px;left: 20px;display: block"
-					v-for="(item,index) in showImageInfo.squareInfoList"
 				>
-					<g>
+					<g v-for="(item,index) in showImageInfo.squareInfoList">
 						<rect :x="item.x*scale"
 							:y="item.y*scale"
 							:width="item.w*scale"
@@ -81,7 +96,14 @@
 							fill="none"
 							stroke="yellow"
 							strokeWidth="5"
-					  />
+					    />
+                        <text :x="item.x*scale + 10"
+							  :y="item.y*scale + 20"
+                              fill="yellow"
+                              @click="changeDifficultType(item.id,item.difficultType)"
+                              >
+                              衣物类型:{{item.difficultType==0?'确定':'不确定'}}  
+                        </text>
 					  <polygon
 							:points="item.positions?item.positions.map(function(ite, ind){return ite.x*scale+','+ite.y*scale}).join(' '):''"
 							stroke="yellow"
@@ -92,6 +114,11 @@
 					</g>
 				</svg>
                 <span slot="footer" class="dialog-footer">
+                    <el-select v-model="fuzailiangValue" placeholder="负载量" class="fuzailiang-style" @change="changeFuZaiLiang">
+                        <el-option v-for="(item, index) in fuzaliang" :key="index" :value="item.value" :label="item.label"></el-option>
+                    </el-select>
+                    <el-button @click="postDifficultType" class="fixed-submit-btn">修改提交</el-button>
+
                     <el-button @click="showImage(showImageInfo.preImgId)">上一张</el-button>
                     <el-button type="danger" @click="deletePic" v-show="deleteImageRole">删 除</el-button>
                     <el-button type="primary" @click="toggoleSvg">轨 迹</el-button>
@@ -164,7 +191,22 @@ export default {
             scale: 0,
             svgHeight: 0,
             deleteImageRole: false,
-            lastImage: true
+            lastImage: true,
+            difficultInfo: {
+                status: 0,
+                squareInfoList: [
+                    {
+                        id: '',
+                        difficultType: ''
+                    }
+                ]
+            },
+            fuzaliang: [
+                { label: '高', value: 'many'},
+                { label: '中', value: 'mid'},
+                { label: '低', value: 'few'},
+            ],
+            fuzailiangValue: ''
         }
     },
     components: {
@@ -230,6 +272,7 @@ export default {
                             this.lastImage = false
                         }
                         if(res.data.code == '001'){
+                            this.difficultInfo.squareInfoList = []
                             this.showImageInfo = {
                                 height: '',
                                 width: '',
@@ -242,10 +285,14 @@ export default {
                             Message.info(res.data.message)
                         }else{
                             let data = JSON.parse(res.data.data)
+                            this.difficultInfo.squareInfoList = []
                             this.showImageInfo = data
                             this.scale = 1200/data.width
                             this.svgHeight = this.scale*data.height
-                            this.showImageVisiable = true     
+                            this.showImageVisiable = true
+                            data.squareInfoList.forEach( (value, index) => {
+                                this.difficultInfo.squareInfoList.push({id: value.id, difficultType: value.difficultType})
+                            })     
                         } 
                         this.getTaskDetailTable()   
                     }else{
@@ -254,13 +301,14 @@ export default {
                 })
             }else{
                 this.showImageInfo = {
-                       height: '',
+                    height: '',
                     width: '',
                     imgId: '',
                     imgpath: '',
                     nextImgId: '',
                     preImgId: ''
                 }
+                this.difficultInfo.squareInfoList = []
                 this.showImageVisiable = false     
                 Message.info('已经是最后一张图片')
                 this.lastImage = true
@@ -289,11 +337,78 @@ export default {
                     }
                 })
             }
+        },
+        handleDeleteImg(id) {
+            let tid = this.taskDetailForm.id
+            let params = dataFarmat({tid: tid,tdId: id})
+            if(confirm('确定要删除吗？')){
+                axios({
+                    url: url.handleDeleteImg,
+                    method: 'post',
+                    data: params
+                }).then( res => {
+                    if(res.data.result){
+                        this.getTaskDetailTable()
+                    }else{
+                        Message.error(res.data.message)
+                    }
+                })
+            }      
+        },
+        changeDifficultType(id, type) {
+            this.difficultInfoMap(this.showImageInfo.squareInfoList, id, type);
+            this.difficultInfoMap(this.difficultInfo.squareInfoList, id, type);  
+        },
+        difficultInfoMap( arr, id, type) {
+            arr.map( (value, index) => {
+                if(id === value.id){
+                    if(type == 0){
+                        value.difficultType = 1
+                    }else{
+                        value.difficultType = 0
+                    }      
+                }
+            })
+        },
+        //修改负载量
+        changeFuZaiLiang() {
+            let imgId = this.showImageInfo.imgId
+            let clothesCapacity = this.fuzailiangValue
+            let params = dataFarmat({id: imgId, clothesCapacity: clothesCapacity})
+            axios({
+                url: url.fixedClothesCapacity,
+                method: 'post',
+                data: params
+            }).then( res => {
+                if( res.data.result ){
+                    Message.success('修改负载量成功')
+                    this.showImageInfo.clothesCapacity = clothesCapacity
+                    this.fuzailiangValue = ''
+                }
+            })
+        },
+        //修改fixedDifficultType
+        postDifficultType() {
+            let params = this.difficultInfo
+            axios({
+                url: url.fixedDifficultType,
+                method: 'post',
+                data: params
+            }).then( res => {
+                if( res.data.result ) {
+                    Message.success('修改成功')
+                }
+            })
         }
     }
 }
 </script>
 
 <style>
-
+.fuzailiang-style{
+    float: left;
+}
+.fixed-submit-btn{
+    float: left;
+}
 </style>

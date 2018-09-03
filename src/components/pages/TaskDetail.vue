@@ -55,6 +55,17 @@
                             type="success"
                             >审核完成
                         </el-tag>
+                        <el-tag
+                            v-else-if="scope.row.status == '4'"
+                            type="success"
+                            >切割完成
+                        </el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column props="status" label="操作">
+                    <template slot-scope="scope">
+                        <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="primary" v-if="scope.row.status == '4'" size="small">审核</el-button></router-link>
+                        <el-button type="warning" v-if="scope.row.status == '3'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>   
                     </template>
                 </el-table-column>
             </el-table>
@@ -144,6 +155,7 @@ export default {
                 { label: '进行中', value: 1 },
                 { label: '标注完成', value: 2 },
                 { label: '审核完成', value: 3 },
+                { label: '切割完成', value: 4 },
             ],
             taskDetailTable: [],
             pageCount: 0,
@@ -230,6 +242,18 @@ export default {
         },
         toggoleSvg() {
             this.svgShow = !this.svgShow
+        },
+        //图片切割
+        taskAdjust(id) {
+            axios({
+                url: `${url.taskAdjust}?id=${id}`,
+                method: 'get'
+            }).then( res => {
+                if(res.data.result){
+                    Message.success('切割成功')
+                    this.getTaskDetailTable()
+                }
+            }) 
         }
     }
 }

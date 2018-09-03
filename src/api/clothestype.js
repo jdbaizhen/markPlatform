@@ -2,7 +2,7 @@ const URL = {
     clothesTypeOne: '/clothesType/list',
     getSquareImg: '/squareImage/index',
     submitSquare: '/squareImage/submit',
-    auditSquare: '/squareImage/checkIndex',
+    auditSquare: '/squareImage/checkInfoIndex',
     auditPassSquare: '/squareImage/checkPass',
     auditRejectSquare: '/squareImage/checkReject'
 }

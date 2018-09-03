@@ -28,7 +28,7 @@
                         ></el-option>
                     </el-option-group>
                 </el-select>
-                <el-button type="info" size="mini" @click="rejectImage">修改提交</el-button>
+                <el-button type="danger" size="mini" @click="rejectImage">修改提交</el-button>
                 <el-button type="success" size="mini" @click="passImage">通过</el-button>
             </div> 
             
@@ -94,7 +94,7 @@ export default {
             const loading = this.$loading(this.loading);
             let taskId = this.taskId
             axios({
-                url: `${url.auditSquare}?tid=${taskId}`,
+                url: `${url.auditSquare}?id=${taskId}`,
                 method: 'get'
             }).then( res => {
                 if(res.data.result && res.data.code != '007'){

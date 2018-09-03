@@ -80,9 +80,13 @@
                         type="success"
                         disable-transitions>导出完成</el-tag>
                         <el-tag
-                        v-else="scope.row.status == '5'"
+                        v-else-if="scope.row.status == '5'"
                         type="danger"
                         disable-transitions>任务被驳回</el-tag>
+                        <el-tag
+                        v-else="scope.row.status == '6'"
+                        type="warning"
+                        disable-transitions>切割任务</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column prop="name" label="标注人员" width="150"></el-table-column>
@@ -111,8 +115,9 @@
                 </el-table-column>
                 <el-table-column prop="status" label="修改任务状态" width="200" align="center">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 5" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
+                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 5 || scope.row.status == 6" v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">标注完成</el-option>
+                            <el-option value="3">审核完成</el-option>
                         </el-select>
                         <span v-else><i class="el-icon-circle-close-outline"></i></span>
                     </template>
@@ -207,6 +212,7 @@ export default {
                 { label: '任务驳回', value: '5' },
                 { label: '审核完成', value: '3' },
                 { label: '导出完成', value: '4' },
+                { label: '切割任务', value: '6' },
             ],
             personStatus: [
                 { label: '在职', value: '0' },

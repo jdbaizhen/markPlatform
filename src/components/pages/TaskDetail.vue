@@ -11,6 +11,11 @@
                         <el-option v-for="(item, index) in imgStatus" :key="index" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="">
+                    <el-select v-model="taskDetailForm.clothesCapacity">
+                        <el-option v-for="(item, index) in clothesCapacity" :key="index" :value="item.value" :label="item.label"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item >
                     <el-button type="primary" @click="submitForm">查询</el-button>
                     <el-button type="default" @click="resetForm">重置</el-button>
@@ -28,6 +33,7 @@
             >
                 <el-table-column prop="id" label="#"></el-table-column>
                 <el-table-column prop="imgname" label="图片名"></el-table-column>
+                <el-table-column prop="clothesCapacity" label="负载量"></el-table-column>
                 <el-table-column prop="imgpath" label="图片展示">
                     <template slot-scope="scope">
                         <img :src="scope.row.imgpath" alt="image" width="40%" @click="showImage(scope.row.imgId)">
@@ -60,12 +66,18 @@
                             type="success"
                             >切割完成
                         </el-tag>
+                        <el-tag
+                            v-else-if="scope.row.status == '5'"
+                            type="success"
+                            >切割审核完成
+                        </el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column props="status" label="操作">
                     <template slot-scope="scope">
                         <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="primary" v-if="scope.row.status == '4'" size="small">审核</el-button></router-link>
                         <el-button type="warning" v-if="scope.row.status == '3'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>   
+                        <el-button type="default" v-if="scope.row.status == '5'" disabled="disabled" size="small">审核结束</el-button>   
                     </template>
                 </el-table-column>
             </el-table>
@@ -147,6 +159,7 @@ export default {
             taskDetailForm: {
                 imgname: '',
                 status: '',
+                clothesCapacity: '',
                 id: '',
                 pageIndex: 1
             },
@@ -156,6 +169,12 @@ export default {
                 { label: '标注完成', value: 2 },
                 { label: '审核完成', value: 3 },
                 { label: '切割完成', value: 4 },
+                { label: '切割审核完成', value: 5 },
+            ],
+            clothesCapacity: [
+                { label: 'few', value: 'few' },
+                { label: 'mid', value: 'mid' },
+                { label: 'many', value: 'many' }
             ],
             taskDetailTable: [],
             pageCount: 0,
@@ -213,6 +232,7 @@ export default {
         resetForm() {
             this.taskDetailForm.imgname = ''
             this.taskDetailForm.status = ''
+            this.taskDetailForm.clothesCapacity = ''
             this.taskDetailForm.pageIndex = 1
         },
         handleCurrentChange(val) {

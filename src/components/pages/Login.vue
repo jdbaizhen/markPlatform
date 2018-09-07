@@ -25,6 +25,11 @@
         登   陆
       </el-button>
     </div>
+     <el-tooltip effect="dark" content="点击下载使用说明" placement="top">
+      <a class="login-download"  @click="download">
+          <i class="el-icon-download"></i>
+      </a>
+    </el-tooltip> 
   </div>
 </template>
 
@@ -41,7 +46,7 @@ export default {
     return {
       username: '',
       password: '',
-      logo: logo
+      logo: logo,
     }
   },
   mounted() {
@@ -89,6 +94,9 @@ export default {
           Message.error('请检查账号密码是否输入错误')
         }
       })
+    },
+    download() {
+      window.location.href = url.download
     }
   }
 }
@@ -131,5 +139,20 @@ export default {
 .login-btn:hover{
   background: rgba(0,238,118,0.5);
   color: #fff;
+}
+.login-download{
+  display: block;
+  text-decoration: none;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  background: skyblue;
+  cursor: pointer;
+  color: #fff;
+  line-height: 50px;
+  font-size: 22px;
 }
 </style>

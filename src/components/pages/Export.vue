@@ -27,7 +27,7 @@
                 <el-form-item>
                     <el-button type="primary" @click="submitForm">查询</el-button>
                     <el-button type="default" @click="resetForm">重置</el-button>
-                    <el-button type="success"><a :href="beginExport" download class="export-btn">开始导出</a></el-button>
+                    <el-button type="success"><a @click.stop="exportBegin" download class="export-btn">开始导出</a></el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -36,10 +36,12 @@
             <el-table 
                 v-loading="loading"
                 :data="exportTable"
+                :row-key="getRowKeys"
                 width="100%"
+                ref="multipleTable"
                 @selection-change="handleSelectionChange"
             >
-                <el-table-column  type="selection"></el-table-column>
+                <el-table-column  type="selection" :reserve-selection="true"></el-table-column>
                 <el-table-column label="#" prop="id"></el-table-column>
                 <el-table-column label="账号" prop="username"></el-table-column>
                 <el-table-column label="任务名称" prop="tName"></el-table-column>
@@ -93,6 +95,7 @@ export default {
     data() {
         return {
             loading: false,
+            btnloading: false,
             searchBreadcrumb: [
                 { path: '', name: '批量导出'},
                 { path: '', name: '搜索'}
@@ -114,7 +117,11 @@ export default {
             pageCount: 0,
             exportPage: 1,
             checkedList: [],
-            beginExport: ''
+            beginExport: '',
+            getRowKeys(row) {
+                return row.id;
+            },
+            ip: 'http://127.0.0.1:8888'
         }
     },
     components: {
@@ -169,17 +176,28 @@ export default {
             }
         },
         handleSelectionChange(val) {
+            console.log(val)
+            this.btnloading =false; 
             this.checkedList = []
             if(val.length!==0){
                 val.forEach((item, index) => {
                     this.checkedList.push(item.id)
                 })
             }
-            this.beginExport = '/export/checkTask?id='+this.checkedList
         },
         handleCurrentChange(val) { 
             this.exportForm.pageIndex = val;
             this.getExportTable()
+        },
+         exportBegin() {
+            if(this.btnloading){
+                return;
+            }
+			let url = `${this.ip}/export/exportTask?id=${this.checkedList}`;
+            window.location.href = url;
+			console.log(url)
+            this.btnloading = true
+            this.checkedList = []
         }
     }
 }

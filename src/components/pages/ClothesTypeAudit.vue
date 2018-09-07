@@ -28,8 +28,9 @@
                         ></el-option>
                     </el-option-group>
                 </el-select>
-                <el-button type="danger" size="mini" @click="rejectImage">修改提交</el-button>
-                <el-button type="success" size="mini" @click="passImage">通过</el-button>
+                <!-- <el-button type="danger" size="mini" @click="rejectImage">修改提交</el-button>
+                <el-button type="success" size="mini" @click="passImage">通过</el-button> -->
+                <el-button type="success" size="mini" @click="fixedImage">通过</el-button>
             </div> 
             
         </el-header>
@@ -91,13 +92,14 @@ export default {
             })
         },
         getImage() {
-            const loading = this.$loading(this.loading);
+            //const loading = this.$loading(this.loading);
             let taskId = this.taskId
             axios({
                 url: `${url.auditSquare}?id=${taskId}`,
                 method: 'get'
             }).then( res => {
                 if(res.data.result && res.data.code != '007'){
+
                     let data = JSON.parse(res.data.data)
                     this.imgSize = {
                         imgId: data.squareImageId,                       
@@ -119,7 +121,7 @@ export default {
                          this.clothesChose = []
                     }
    
-                    loading.close()
+                   // loading.close()
                 }else if(res.data.result && res.data.code == '007'){
                     this.imgSize = {
                         imgpath: img,
@@ -129,10 +131,10 @@ export default {
                         imgHeight: 720
                     }
                     this.clothesChose = []
-                    loading.close()
+                   // loading.close()
                 }else{
                     Message.error(res.data.message)
-                    loading.close()
+                    //loading.close()
                 }
             })
         },
@@ -179,6 +181,24 @@ export default {
                     }
                 })
             }       
+        },
+        fixedImage() {
+            let imgId = this.imgSize.imgId
+            let featureId = this.clothesChose
+            let params = dataFarmat({ squareImageId: imgId, featureId: featureId })
+            axios({
+                    url: url.auditLastSubmit,
+                    method: 'post',
+                    data: params
+                }).then( res => {
+                    if(res.data.result){
+                        this.clothesChose = []
+                        Message.success('修改成功')
+                        this.getImage()
+                    }else{
+                        Message.error(res.data.message)
+                    }
+                })   
         },
         changeImgSize() {
             let sliderValue = this.sliderOption.initvalue

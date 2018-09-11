@@ -37,6 +37,7 @@
                     <el-button type="primary" @click="submitForm">查询</el-button>
                     <el-button type="default" @click="resetForm">重置</el-button>
                     <el-button type="success" @click="publishTaskVisible = true" v-show="save_task">发布任务</el-button>
+                    <el-button type="success" @click="uploadTaskPic" v-show="save_picture">上传标注图片</el-button>
                 </el-form-item>    
             </el-form>
         </el-header>
@@ -153,6 +154,20 @@
                     <el-button type="primary" @click="publishTask">确 定</el-button>
                 </span>
             </el-dialog>
+            <el-dialog
+                title="选取任务图片路径"
+                :visible.sync="uploadTaskPicVisible"
+                width="30%"
+                center
+            >
+                <div>
+                    <el-radio class="path-radio" v-for="(item, index) in uploadTaskArr" v-model="chosePath" :label="item" :key="index" border>{{item}}</el-radio>
+                </div>
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="uploadTaskCancle">取 消</el-button>
+                    <el-button type="primary" @click="uploadTask">确 定</el-button>
+                </span>
+            </el-dialog>
         </el-main>
         <el-footer>
             <el-pagination
@@ -190,7 +205,6 @@ export default {
                 username: '',
                 name: '',
                 id: '',
-                taskType: '',
                 status: '',
                 personStatus: '',
                 beginTime: '',
@@ -215,9 +229,11 @@ export default {
             newTransferPerson: '', //被派发人员
             changeTaskStatus: '', //修改后的任务状态
             publishTaskVisible: false, //发布任务模态框
+            uploadTaskPicVisible: false,    //控制保存图片的模态框
+            uploadTaskArr: [],  //后台所有的路径地址
+            chosePath: '',      //选中的后台地址
             publishTaskForm: {  
                 name: '',
-                taskType: '',
                 count: '',
                 userId: []
             },
@@ -227,7 +243,8 @@ export default {
             ],      
             update_status: false,
             save_task: false,    
-            task_verify: false  
+            task_verify: false,
+            save_picture: false  
         }
     },
     components: {
@@ -245,6 +262,9 @@ export default {
             }
             if(roleString.indexOf('task_verify') != -1){
                 this.task_verify = true
+            }
+            if(roleString.indexOf('save_picture') != -1){
+                this.save_picture = true
             }
         }  
         if(isLogin){
@@ -354,7 +374,6 @@ export default {
                 username: '',
                 name: '',
                 status: '',
-                taskType: '',
                 personStatus: '',
                 beginTime: '',
                 endTime: '',
@@ -435,6 +454,37 @@ export default {
         handleCurrentChange(val) { 
             this.taskForm.pageIndex = val;
             this.getTaskTable()
+        },
+        //管理员获取保存图片的路径
+        uploadTaskPic() {
+            axios({
+                url: url.picturePathList,
+                method: 'get'
+            }).then( res => {
+                if(res.data.result){
+                    let picArr = JSON.parse(res.data.data)
+                    this.uploadTaskArr = picArr
+                    this.uploadTaskPicVisible = true
+                }
+            })
+        },
+        uploadTask() {
+            let params = dataFarmat({path: this.chosePath})
+            axios({
+                url: url.picturePath,
+                method: 'post',
+                data: params
+            }).then( res => {
+                if(res.data.result){
+                    Message.success(res.data.message)
+                    this.uploadTaskPicVisible = false
+                }else{
+                    Message.error(res.data.message)
+                }
+            })
+        },
+        uploadTaskCancle() {
+            this.uploadTaskPicVisible = false
         }
     }
 }
@@ -442,5 +492,8 @@ export default {
 <style>
   .uniftyWidth{
       width: 100px;
+  }
+  .path-radio{
+      margin: 10px 0 0 10px;
   }
 </style>

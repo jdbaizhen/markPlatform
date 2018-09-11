@@ -28,7 +28,7 @@
             >
                 <el-table-column prop="id" label="#"></el-table-column>
                 <el-table-column prop="imgname" label="图片名"></el-table-column>
-                <el-table-column prop="clothesCapacity" label="负载量"></el-table-column>
+                <!-- <el-table-column prop="clothesCapacity" label="负载量"></el-table-column> -->
                 <el-table-column prop="imgpath" label="图片展示">
                     <template slot-scope="scope">
                         <img :src="scope.row.imgpath" alt="image" width="40%" @click="showImage(scope.row.imgId)">
@@ -61,7 +61,7 @@
                 
             </el-table>
             <el-dialog
-                :title="`负载量：${showImageInfo.clothesCapacity}`"
+                title="查看大图"
                 :visible.sync="showImageVisiable"
                 width="1240px"
             >

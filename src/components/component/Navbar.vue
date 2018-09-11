@@ -53,18 +53,18 @@ export default {
     },
     mounted() {
       let isLogin = getSession('isLogin')
-      let roleString = getSession('role')
-      if(roleString){
-        if(roleString.indexOf('check_picture') != -1){
-          this.check_picture = true
-        }
-        if(roleString.indexOf('batch_export') != -1){
-          this.batch_export = true
-        }
-        if(roleString.indexOf('task_log_search') != -1){
-          this.task_log_search = true
-        }   
-      } 
+      // let roleString = getSession('role')
+      // if(roleString){
+      //   if(roleString.indexOf('check_picture') != -1){
+      //     this.check_picture = true
+      //   }
+      //   if(roleString.indexOf('batch_export') != -1){
+      //     this.batch_export = true
+      //   }
+      //   if(roleString.indexOf('task_log_search') != -1){
+      //     this.task_log_search = true
+      //   }   
+      // } 
       if(isLogin){    
       }else{
         this.$router.push({path: '/login'})
@@ -80,6 +80,9 @@ export default {
           if(res.data.result){
             let data = JSON.parse(res.data.data)
             this.admin = data.name
+            if(data.username.indexOf('shenhe') != -1){
+              this.$router.push({path: '/audit'})
+            }
           }else{
             Message.error(res.data.message)
           }

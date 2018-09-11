@@ -6,7 +6,9 @@ const URL = {
   changeTransferPerson: '/task/taskTransfer',
   publishTask: '/task/save',
   receiveTask: '/task/draw',
-  deleteTask: '/task/del'
+  deleteTask: '/task/del',
+  picturePathList: '/picture/dirList',
+  picturePath: '/picture/savePicture'
 }
 
 module.exports = URL

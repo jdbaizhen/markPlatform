@@ -77,7 +77,7 @@
                     <template slot-scope="scope">
                         <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="primary" v-if="scope.row.status == '4'" size="small">审核</el-button></router-link>
                         <el-button type="warning" v-if="scope.row.status == '3'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>   
-                        <el-button type="default" v-if="scope.row.status == '5'" disabled="disabled" size="small">审核结束</el-button>   
+                        <el-button type="primary" v-if="scope.row.status == '5'" @click="interimDetail(scope.row.id)" size="small">查看详情</el-button>   
                     </template>
                 </el-table-column>
             </el-table>
@@ -118,6 +118,25 @@
                     <el-button type="primary" @click="toggoleSvg">轨 迹</el-button>
                     <el-button @click="showImage(showImageInfo.nextImgId)">下一张</el-button>
                 </span>
+            </el-dialog>
+            <el-dialog
+                title="24小图详情"
+                :visible.sync="interimDetailVisiable"
+                width= "90%"
+            >
+                <ul class="interim-container">
+                    <li v-for="(item, index) in interimArr" :key="index">
+                        <img :src="item.squareImagePath" alt="">
+                        <div class="feature-conatiner">
+                            <p v-for="(ite, ind) in item.clothesTypeList">
+                                <span>{{ite.clothesType}}--></span>
+                                <span v-for="(ie, id) in ite.clothesFeatureList">
+                                    {{ie.featureType}}
+                                </span>
+                            </p>
+                        </div> 
+                    </li>
+                </ul>
             </el-dialog>
         </el-main>
         <el-footer>
@@ -189,7 +208,9 @@ export default {
                 preImgId: ''
             },
             scale: 0,
-            svgHeight: 0
+            svgHeight: 0,
+            interimDetailVisiable: false,
+            interimArr: []
         }
     },
     components: {
@@ -274,11 +295,55 @@ export default {
                     this.getTaskDetailTable()
                 }
             }) 
+        },
+        //查看详情
+        interimDetail(id) {
+            axios({
+                url: `${url.interimDetail}?tid=${id}`,
+                method: 'get'
+            }).then( res => {
+                if(res.data.result){
+                    let data = JSON.parse(res.data.data);
+                    this.interimArr = data
+                    this.interimDetailVisiable = true
+                }
+            })
         }
     }
 }
 </script>
 
 <style>
-
+.interim-container{
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+}
+.interim-container li{
+    position: relative;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    width: 16.3%;
+    padding-right: 0.3%;
+}
+.interim-container li img{
+    width: 100%;
+}
+.feature-conatiner{
+    position: absolute;
+    bottom: 5px;
+    left: 0px;
+    right: 1.8%;
+    padding-left: 10px;
+    background: rgba(0,0,0,.5);
+    color: #fff;
+}
+.feature-conatiner p {
+    margin: 0px;
+    height: 30px;
+    line-height: 30px;
+}
 </style>

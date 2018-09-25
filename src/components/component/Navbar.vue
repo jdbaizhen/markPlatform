@@ -10,7 +10,8 @@
     <router-link to="/log" tag="li" v-show="task_log_search"><el-menu-item index="1-3">日志列表</el-menu-item></router-link>
   </el-submenu>
   <el-menu-item index="2" onclick="window.location.href='./index.html'">矩形标注</el-menu-item>
-  <el-menu-item index="3" onclick="window.location.href='./index2.html'">多边形标注</el-menu-item>
+  <!-- <el-menu-item index="3" onclick="window.location.href='./index2.html'">多边形标注</el-menu-item> -->
+  <el-menu-item index="8" @click="goPages('Upload')" v-show="batch_export">上传图片</el-menu-item>
   <el-menu-item index="4" @click="goPages('Export')" v-show="batch_export">批量导出</el-menu-item>
   <el-submenu index="5" v-show="check_picture">
     <template slot="title">图片库管理</template>
@@ -23,6 +24,7 @@
       {{item.label}}
     </el-menu-item>
   </el-submenu>
+
   <el-menu-item index="7" class="nav-admin" @click="logout">注销</el-menu-item>
   <el-menu-item index="6" class="nav-admin">{{admin}}</el-menu-item>
 </el-menu>

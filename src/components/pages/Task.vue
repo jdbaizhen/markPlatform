@@ -36,7 +36,7 @@
                 <el-form-item class='search-btn-group'>
                     <el-button type="primary" @click="submitForm" icon="el-icon-search" size="small"></el-button>
                     <el-button type="warning" @click="resetForm" size="small">重置</el-button>
-                    <el-button type="success" @click="publishTaskVisible = true" v-show="save_task" size="small">发布任务</el-button>
+                    <el-button type="success" @click="publishTaskVisible = true" v-show="save_task" size="small">发布</el-button>
                 </el-form-item>    
             </el-form>
         </el-header>
@@ -314,7 +314,7 @@ export default {
                 { label: '中', value: 'mid'},
                 { label: '低', value: 'few'},
             ],
-            fuzailiangValue: ''
+            fuzailiangValue: '',
         }
     },
     components: {

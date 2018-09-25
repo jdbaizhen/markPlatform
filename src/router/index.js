@@ -7,6 +7,7 @@ import TaskDetail from '@/components/pages/TaskDetail'
 import Audit from '@/components/pages/Audit'
 import Log from '@/components/pages/Log'
 import Export from '@/components/pages/Export'
+import Upload from '@/components/pages/Upload'
 import Photo from '@/components/pages/Photo'
 // import ClothesType from '@/components/pages/ClothesType'
 // import ClothesTypeAudit from '@/components/pages/ClothesTypeAudit'
@@ -28,7 +29,7 @@ export default new Router({
         {
           path: 'task',
           name: 'Task',
-          component: Task 
+          component: Task
         },
         {
           path: 'taskdetail',
@@ -54,6 +55,11 @@ export default new Router({
           path: 'photo',
           name: 'Photo',
           component: Photo
+        },
+        {
+          path: 'upload',
+          name: 'Upload',
+          component: Upload
         }
         // {
         //   path: 'clothestype',

@@ -7,12 +7,12 @@
                     <el-input v-model="taskDetailForm.imgname" placeholder="图片名"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskDetailForm.status">
+                    <el-select v-model="taskDetailForm.status" placeholder="任务状态">
                         <el-option v-for="(item, index) in imgStatus" :key="index" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskDetailForm.clothesCapacity">
+                    <el-select v-model="taskDetailForm.clothesCapacity" placeholder="负载量">
                         <el-option v-for="(item, index) in clothesCapacity" :key="index" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>

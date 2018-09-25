@@ -9,11 +9,11 @@
                 <el-form-item label="">
                     <el-input v-model="auditForm.name" placeholder="任务名称"></el-input>
                 </el-form-item>
-                <el-form-item label="">
+                <!-- <el-form-item label="">
                     <el-select v-model="auditForm.taskType" placeholder="任务类型"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
-                </el-form-item>
+                </el-form-item> -->
                 <el-form-item label="">
                     <el-input v-model="auditForm.username" placeholder="标注人员"></el-input>
                 </el-form-item>
@@ -66,8 +66,8 @@
                 <el-table-column prop="status" label="修改任务状态">
                     <template slot-scope="scope">
                          <el-select v-model="changeTaskStatus" size="mini" class="uniftyWidth" @change="changeTaskState(scope.row.id)">
-                            <el-option value="3">审核完成</el-option>
-                            <el-option v-show="scope.row.taskType != 1" value="5">任务驳回</el-option>
+                            <el-option value="3">矩形框审核完成</el-option>
+                            <el-option v-show="scope.row.taskType != 1" value="0">矩形框任务驳回</el-option>
                         </el-select>
                     </template>
                 </el-table-column>

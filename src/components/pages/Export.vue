@@ -14,8 +14,8 @@
                 </el-form-item>
                 <el-form-item>
                     <el-select v-model="exportForm.status" placeholder="任务状态">
-                        <el-option value="3" label="审核完成">审核完成</el-option>
-                        <el-option value="4" label="导出完成">导出完成</el-option>
+                        <el-option value="3" label="矩形框审核完成">矩形框审核完成</el-option>
+                        <el-option value="5" label="24框标注完成">24框标注完成</el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -49,26 +49,16 @@
                 <el-table-column label="标注人员" prop="name"></el-table-column>
                 <el-table-column label="发布时间" prop="publishTime"></el-table-column>
                 <el-table-column label="任务状态" prop="id">
-                    <template slot-scope="scope">
+                    <template slot-scope="scope">               
                         <el-tag
-                        v-if="scope.row.status == '0'"
-                        type="danger"
-                        disable-transitions>未领取任务</el-tag>
-                        <el-tag
-                        v-else-if="scope.row.status == '1'"
-                        type="info"
-                        disable-transitions>正在标注</el-tag>
-                         <el-tag
-                        v-else-if="scope.row.status == '2'"
-                        disable-transitions>标注完成</el-tag>
-                         <el-tag
-                        v-else-if="scope.row.status == '3'"
+                        v-if="scope.row.status == '3'"
                         type="warning"
-                        disable-transitions>审核完成</el-tag>
-                         <el-tag
-                        v-else="scope.row.status == '4'"
-                        type="success"
-                        disable-transitions>导出完成</el-tag>
+                        disable-transitions>矩形框审核完成</el-tag>
+
+                        <el-tag
+                        v-else-if="scope.row.status == '5'"
+                        type="danger"
+                        disable-transitions>24框标注完成</el-tag>
                     </template>
                 </el-table-column>
             </el-table>
@@ -193,7 +183,8 @@ export default {
             if(this.btnloading){
                 return;
             }
-			let url = `${this.ip}/export/exportTask?id=${this.checkedList}`;
+            let status = this.exportForm.status;
+			let url = `${this.ip}/export/exportTask?id=${this.checkedList}&status=${status}`;
             window.location.href = url;
 			console.log(url)
             this.btnloading = true

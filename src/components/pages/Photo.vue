@@ -7,7 +7,10 @@
             <el-header class="main-style-header">
                 <el-button type="danger" icon="el-icon-delete" v-loading.fullscreen.lock="loading" size="mini" @click="submitPhoto(0)"></el-button>
                 <span class="main-style-info">剩余{{pictureInfo.countPage}}张图片</span>
-                <el-button type="success" size="mini" v-loading.fullscreen.lock="loading" @click="submitPhoto(1)">通过</el-button>
+                <el-select size="mini" v-model="clothesCapacity" placeholder="请选择负载量" @change="submitPhoto(1)">
+                    <el-option v-for="(item, index) in featureList" :key="index" :label="item.label" :value="item.value"></el-option>
+                </el-select>
+                <!-- <el-button type="success" size="mini" v-loading.fullscreen.lock="loading" @click="submitPhoto(1)">通过</el-button> -->
             </el-header> 
             <el-container>
                 <el-main class="photo-container">
@@ -46,7 +49,13 @@ export default {
 				nextImgId: '',
 				imgId: ''
             },
-            deletePhotoList: []
+            deletePhotoList: [],
+            featureList: [
+                {value: 'many', label: '高'},
+                {value: 'mid', label: '中'},
+                {value: 'few', label: '低'}
+            ],
+            clothesCapacity: null
         }
     },
      components: {
@@ -96,15 +105,15 @@ export default {
                     this.postPhoto(url.pictureDelete)
                 }
             }else{
-                this.postPhoto(url.picturePass)
+                let clothesCapacity = this.clothesCapacity
+                this.postPhoto(url.picturePass, clothesCapacity)
             }
         },
-        postPhoto(path) {
+        postPhoto(path, clothesCapacity) {
             this.loading = true
             let deviceNumber = this.machine
             let imageId = this.pictureInfo.imgId
-            let nextImageId = this.pictureInfo.nextImgId
-            let params = dataFarmat({deviceNumber: deviceNumber, imageId: imageId, nextImageId: nextImageId})
+            let params = dataFarmat({deviceNumber: deviceNumber, imageId: imageId, clothesCapacity: clothesCapacity})
             axios({
                 url: path,
                 method: 'post',
@@ -125,6 +134,7 @@ export default {
                     }
                     this.deletePhotoCount()
                     this.loading = false
+                    this.clothesCapacity = null
                 }else{
                     Message.error(res.data.message)
                 }

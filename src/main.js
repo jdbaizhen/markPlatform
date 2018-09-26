@@ -3,7 +3,10 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import promise from 'es6-promise'
 import { Input, Button, Icon, Container, Header, Main, Aside, Footer, Menu, MenuItem, Submenu, Form, FormItem, Select, Option, DatePicker, Table, TableColumn, Tag, Pagination, Loading, Dialog, Breadcrumb, BreadcrumbItem, Checkbox, Collapse, CollapseItem, Slider, OptionGroup } from 'element-ui'
+
+promise.polyfill()
 
 Vue.config.productionTip = false
 Vue.use(Input)

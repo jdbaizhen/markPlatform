@@ -115,7 +115,7 @@
                 </el-table-column>
                 <el-table-column prop="status" label="修改任务状态" width="200" align="center">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 " v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
+                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">矩形框标注完成</el-option>
                             <el-option value="5">24框标注完成</el-option>
                         </el-select>

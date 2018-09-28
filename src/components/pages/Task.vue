@@ -4,44 +4,44 @@
             <breadcrumb :data="searchBreadcrumb"></breadcrumb>
             <el-form :inline="true" :model="taskForm" ref="taskForm" >
                 <el-form-item label="">
-                    <el-input v-model="taskForm.username" placeholder="账户"></el-input>
+                    <el-input v-model="taskForm.username" placeholder="账户"  size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-input v-model="taskForm.name" placeholder="执行人"></el-input>
+                    <el-input v-model="taskForm.name" placeholder="执行人" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-input v-model="taskForm.id" placeholder="任务代号"></el-input>
+                    <el-input v-model="taskForm.id" placeholder="任务代号" size="small"></el-input>
                 </el-form-item>
                 <!-- <el-form-item label="">
-                    <el-select v-model="taskForm.taskType" placeholder="任务类型"> 
+                    <el-select v-model="taskForm.taskType" placeholder="任务类型" size="small"> 
                         <el-option v-for="(item, index) in taskTypes" :label="item.label" :value="item.value" :key="index"></el-option>
                     </el-select>
                 </el-form-item> -->
                 <el-form-item label="">
-                    <el-select v-model="taskForm.status" placeholder="选择任务状态">
+                    <el-select v-model="taskForm.status" placeholder="选择任务状态" size="small">
                         <el-option v-for="item in taskStatus" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskForm.personStatus" placeholder="选择人员状态">
+                    <el-select v-model="taskForm.personStatus" placeholder="选择人员状态" size="small">
                         <el-option v-for="item in personStatus" :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-date-picker v-model="taskForm.beginTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
+                    <el-date-picker v-model="taskForm.beginTime" type="datetime" size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
                 </el-form-item>
                  <el-form-item label="">
-                    <el-date-picker v-model="taskForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
+                    <el-date-picker v-model="taskForm.endTime" type="datetime" size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
                 </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
-                    <el-button type="success" @click="publishTaskVisible = true" v-show="save_task">发布任务</el-button>
+                <el-form-item  class='search-btn-group'>
+                    <el-button type="primary" size="small" @click="submitForm">查询</el-button>
+                    <el-button type="default" size="small" @click="resetForm">重置</el-button>
+                    <el-button type="success" size="small" @click="publishTaskVisible = true" v-show="save_task">发布任务</el-button>
                 </el-form-item>    
             </el-form>
         </el-header>
-        <el-main>
-            <breadcrumb :data="listBreadcrumb"></breadcrumb>
+        <el-main  class="main-table">
+            <!-- <breadcrumb :data="listBreadcrumb"></breadcrumb> -->
             <el-table
                  v-loading="loading"
                 :data="taskTable"
@@ -106,7 +106,7 @@
                 </el-table-column>
                 <el-table-column v-if="update_status" prop="personStatus" label="修改人员状态" width="200" align="center">
                     <template slot-scope="scope">
-                         <el-select v-if="scope.row.personStatus == '1'" :label="scope.row.name" :key="scope.row.id" v-model="newTransferPerson"  size="mini" placeholder="移交任务" class="uniftyWidth" @change="changeTransferPerson(scope.row.id)">
+                         <el-select v-if="scope.row.personStatus == '1'" :label="scope.row.name" :key="scope.row.id" size="mini" :value="scope.row.name" placeholder="移交任务" class="uniftyWidth" @change="changeTransferPerson(scope.row.id, $event)">
                             <el-option v-for=" (item, index) in transferPersonList" :key="item.id" :value="item.id" :label="item.name" ></el-option>
                         </el-select>
                         <el-button v-else-if="scope.row.personStatus=='0'&& scope.row.status =='0'||scope.row.status =='1'||scope.row.status =='2'" size="mini" @click="updatePersonStatus(scope.row.id)" class="uniftyWidth">移交</el-button>
@@ -115,7 +115,7 @@
                 </el-table-column>
                 <el-table-column prop="status" label="修改任务状态" width="200" align="center">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " v-model="changeTaskStatus" @change="updateTaskStatus(scope.row.id)" size="mini" placeholder="任务状态" class="uniftyWidth">
+                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " value="" @change="updateTaskStatus(scope.row.id, $event)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">矩形框标注完成</el-option>
                             <el-option value="5">24框标注完成</el-option>
                         </el-select>
@@ -137,6 +137,7 @@
                 :visible.sync="publishTaskVisible"
                 width="30%"
                 center
+                custom-class="dialogs"
             >
                 <el-form v-model="publishTaskForm" label-position="left" label-width="100px">
                     <el-form-item label="任务名称" required>
@@ -164,6 +165,7 @@
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
               :page-size="10"
               :current-page.sync="taskPage"
@@ -187,7 +189,7 @@ export default {
             searchBreadcrumb: [
                 { path: '/task', name: '任务管理'},
                 { path: '/task', name: '任务列表'},
-                { path: '', name: '搜索'}
+                // { path: '', name: '搜索'}
             ],
             listBreadcrumb: [
                 { path: '/task', name: '任务管理'},
@@ -222,8 +224,6 @@ export default {
             pageCount: 0,  //总条数
             taskPage: 1, //当前页
             transferPersonList: [], //在职人员列表
-            newTransferPerson: '', //被派发人员
-            changeTaskStatus: '', //修改后的任务状态
             publishTaskVisible: false, //发布任务模态框
             publishTaskForm: {  
                 name: '',
@@ -383,9 +383,8 @@ export default {
             })
         },
         //重新派发任务
-        changeTransferPerson(taskId) {
+        changeTransferPerson(taskId, uid) {
             if(confirm('确认移交任务？')){
-                let uid = this.newTransferPerson;
                 let params = dataFarmat({ id: taskId, uid: uid});
                 axios({
                     url: url.changeTransferPerson,
@@ -394,7 +393,6 @@ export default {
                 }).then( res => {
                     if(res.data.result){
                         this.getTaskTable()
-                        this.newTransferPerson = ''
                     }else{
                         Message.error('移交任务失败')
                     }
@@ -419,9 +417,8 @@ export default {
 			}	
         },
         //修改任务状态
-        updateTaskStatus(personId) {
+        updateTaskStatus(personId, status) {
             if(confirm('确认修改任务状态？')){
-                let status = this.changeTaskStatus
                 let params = dataFarmat({status: status, id: personId})
                 axios({
                     url: url.updateTaskStatus,
@@ -430,7 +427,6 @@ export default {
                 }).then( res => {
                     if(res.data.result){
                         Message.success('任务状态修改成功')
-                        this.changeTaskStatus = ''
                         this.getTaskTable()
                     }else{
                         Message.error(res.data.message)
@@ -449,5 +445,8 @@ export default {
 <style>
   .uniftyWidth{
       width: 100px;
+  }
+  .dialogs{
+      z-index: 9999 !important;
   }
 </style>

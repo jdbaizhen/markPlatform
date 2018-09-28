@@ -4,30 +4,30 @@
             <breadcrumb :data="searchBreadcrumb"></breadcrumb>  
             <el-form v-model="logForm" :inline="true">
                  <el-form-item label="">
-                    <el-input v-model="logForm.username" placeholder="标注人员"></el-input>
+                    <el-input v-model="logForm.username" placeholder="标注人员" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-input v-model="logForm.taskLogTid" placeholder="任务编号"></el-input>
+                    <el-input v-model="logForm.taskLogTid" placeholder="任务编号" size="small"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-select v-model="logForm.taskLogOperate" placeholder="任务状态">
+                    <el-select v-model="logForm.taskLogOperate" placeholder="任务状态" size="small">
                         <el-option v-for="(item, index) in taskStatus" :key="index" :value="item" :label="item"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-date-picker v-model="logForm.beginTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
+                    <el-date-picker v-model="logForm.beginTime" type="datetime" size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="起始时间" @change="getTime(0, $event)"></el-date-picker>
                 </el-form-item>
                  <el-form-item label="">
-                    <el-date-picker v-model="logForm.endTime" type="datetime" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
+                    <el-date-picker v-model="logForm.endTime" type="datetime" size="small" format="yyyy-MM-dd HH:mm:ss" placeholder="终止时间"  @change="getTime(1, $event)"></el-date-picker>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
+                    <el-button type="primary" size="small" @click="submitForm">查询</el-button>
+                    <el-button type="default" size="small" @click="resetForm">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
-        <el-main>
-            <breadcrumb :data="listBreadcrumb"></breadcrumb>  
+        <el-main class="main-table">
+            <!-- <breadcrumb :data="listBreadcrumb"></breadcrumb>   -->
             <el-table
                 v-loading="loading"
                 :data="logTable"
@@ -41,6 +41,7 @@
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
                :current-page.sync="logPage"
               :page-size="10"
@@ -64,7 +65,7 @@ export default {
             searchBreadcrumb: [
                 {path: '/task', name: '任务管理'},
                 {path: '/log', name: '日志'},
-                {path: '', name: '搜索'},
+                // {path: '', name: '搜索'},
             ],
             listBreadcrumb: [
                 {path: '/task', name: '任务管理'},

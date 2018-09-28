@@ -22,13 +22,15 @@ export default {
 .go-top{
     position: fixed;
     bottom: 80px;
-    right: 30px;
+    left: 30px;
     width: 50px;
     height: 50px;
     line-height: 50px;
     border: 1px solid #ccc;
+    background: rgba(9, 194, 201, 0.3);
     text-align: center;
     border-radius: 8px;
+    color: #fff;
     z-index: 9999;
 }
 .go-top:hover{
@@ -44,7 +46,6 @@ export default {
     text-align: center;
     border-top: 1px solid #ccc;
     color: #fff;
-    background: rgba(0,245,255,0.7);
-    z-index: 9999;
+    background: rgba(9, 194, 201, 0.7);
 }
 </style>

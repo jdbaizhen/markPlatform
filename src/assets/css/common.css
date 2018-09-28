@@ -1,0 +1,43 @@
+.mains{
+    position: absolute;
+    top: 60px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+  .mains::-webkit-scrollbar {/*滚动条整体样式*/
+    width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
+    height: 4px;
+  }
+  .mains::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    background: rgba(0,0,0,0.2);
+  }
+  .mains::-webkit-scrollbar-track {/*滚动条里面轨道*/
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    border-radius: 0;
+    background: rgba(0,0,0,0.1);
+  }
+  .main-table{
+      padding-bottom: 0px;
+      padding-top: 10px;
+  }
+  .paginations{
+    background: #fff;
+    text-align: right;
+    padding: 12px 5px;
+  }
+  .search-btn-group{
+    float: right;
+  }
+  .nav-header{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 0;
+    z-index: 1000;
+  }

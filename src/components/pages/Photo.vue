@@ -3,7 +3,7 @@
         <el-header class="main-style-header">
             <breadcrumb :data="breadcrumb"></breadcrumb>
         </el-header>
-        <el-container> 
+        <el-container class="containers"> 
             <el-header class="main-style-header">
                 <el-button type="danger" icon="el-icon-delete" v-loading.fullscreen.lock="loading" size="mini" @click="submitPhoto(0)"></el-button>
                 <span class="main-style-info">剩余{{pictureInfo.countPage}}张图片</span>
@@ -158,6 +158,9 @@ export default {
 </script>
 
 <style>
+.containers{
+    background: #fff;
+}
 .photo-container{
     padding-top: 0px
 }
@@ -171,8 +174,8 @@ export default {
     padding: 0px 50px;
 }
 .delete-info-container{
-    width: 360px;
-    padding: 0px 20px 20px 20 px;
+    width: 30% !important;
+    padding: 0px 20px 20px 50 px;
 }
 .delete-info-container h3{
     margin: 0px 0px 15px 0px;

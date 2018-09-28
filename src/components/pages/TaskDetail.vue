@@ -4,26 +4,26 @@
             <breadcrumb :data="searchBreadcrumb"></breadcrumb>
             <el-form :inline="true" v-model="taskDetailForm">
                 <el-form-item label="">
-                    <el-input v-model="taskDetailForm.imgname" placeholder="图片名"></el-input>
+                    <el-input v-model="taskDetailForm.imgname" placeholder="图片名" size="small"></el-input>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskDetailForm.status" placeholder="任务状态">
+                    <el-select v-model="taskDetailForm.status" placeholder="任务状态" size="small">
                         <el-option v-for="(item, index) in imgStatus" :key="index" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="">
-                    <el-select v-model="taskDetailForm.clothesCapacity" placeholder="负载量">
+                    <el-select v-model="taskDetailForm.clothesCapacity" placeholder="负载量" size="small">
                         <el-option v-for="(item, index) in clothesCapacity" :key="index" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item >
-                    <el-button type="primary" @click="submitForm">查询</el-button>
-                    <el-button type="default" @click="resetForm">重置</el-button>
+                    <el-button type="primary" size="small" @click="submitForm">查询</el-button>
+                    <el-button type="default" size="small" @click="resetForm">重置</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
-        <el-main>
-            <breadcrumb :data="listBreadcrumb"></breadcrumb>
+        <el-main class="main-table">
+            <!-- <breadcrumb :data="listBreadcrumb"></breadcrumb> -->
             <el-table
                 :data="taskDetailTable"
                 v-loading="loading"
@@ -141,6 +141,7 @@
         </el-main>
         <el-footer>
             <el-pagination
+              class="paginations"
               @current-change="handleCurrentChange"
               :current-page.sync="taskDetailPage"
               :page-size="10"
@@ -164,10 +165,10 @@ export default {
             loading: false,
             svgShow: true,
             searchBreadcrumb: [
-                { path: '/task', name: '任务管理'},
+               // { path: '/task', name: '任务管理'},
                 { path: '/task', name: '任务列表'},
                 { path: '/taskdetail', name: '任务详情'},
-                { path: '', name: '搜索'}
+                // { path: '', name: '搜索'}
             ],
             listBreadcrumb: [
                 { path: '/task', name: '任务管理'},

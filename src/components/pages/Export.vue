@@ -122,14 +122,13 @@ export default {
                 { label: '24小图标注', value: 1 }
             ], 
             statusExport: [
-                { label: '审核完成', value: 3},
-                { label: '修复审核完成', value: 6},
+                { label: '标注完成', value: 2},
             ], 
             exportForm: {
                 username: '',
                 name: '',
                 tName: '',
-                status: 3,
+                status: 2,
                 beginTime: '',
                 endTime: '',
                 taskType: 0,
@@ -142,7 +141,7 @@ export default {
             getRowKeys(row) {
                 return row.id;
             },
-            ip: 'http://192.168.3.84:8666'
+            ip: 'http://192.168.3.84:8777'
         }
     },
     components: {

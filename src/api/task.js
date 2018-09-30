@@ -4,7 +4,7 @@ const URL = {
   updatePersonStatus: '/task/updatePersonStatus',
   getTransferPerson: '/user/searchTaskTransferPerson',
   changeTransferPerson: '/task/taskTransfer',
-  publishTask: '/task/save',
+  publishTask: '/task/automaticRelease',
   receiveTask: '/task/draw',
   deleteTask: '/task/del'
 }

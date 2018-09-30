@@ -33,7 +33,7 @@ import logo from '@/assets/images/logo2.png'
 import { Message } from 'element-ui'
 import axios from 'axios'
 import url from '@/api/login.js'
-import { getSession, removeSession } from '@/utils/session.js'
+import { getSession, setSession, removeSession } from '@/utils/session.js'
 export default {
     data() {
       return {
@@ -82,6 +82,7 @@ export default {
           if(res.data.result){
             let data = JSON.parse(res.data.data)
             this.admin = data.name
+            setSession('userId', data.id);
           }else{
             Message.error(res.data.message)
           }

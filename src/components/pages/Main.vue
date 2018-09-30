@@ -1,5 +1,4 @@
 <template>
-    <div>
         <el-container>
             <el-header class="nav-header">
                 <Navbar></Navbar>
@@ -10,10 +9,7 @@
             <el-footer>
                 <Footer></Footer>
             </el-footer>
-        </el-container>
-        
-        
-    </div>
+        </el-container> 
 </template>
 
 <script>

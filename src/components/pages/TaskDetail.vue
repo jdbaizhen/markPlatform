@@ -76,8 +76,9 @@
                 <el-table-column props="status" label="操作">
                     <template slot-scope="scope">
                         <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="primary" v-if="scope.row.status == '4'" size="small">审核</el-button></router-link>
-                        <el-button type="warning" v-if="scope.row.status == '3'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>   
+                        <el-button type="warning" v-if="scope.row.status == '3' && scope.row.tStatus == '4'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>   
                         <el-button type="primary" v-if="scope.row.status == '5'" @click="interimDetail(scope.row.id)" size="small">查看详情</el-button>   
+                        <el-button type="default" size="small" v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 2 || scope.row.status == 3 && scope.row.tStatus != '4' " disabled>暂无可操作事项</el-button>
                     </template>
                 </el-table-column>
             </el-table>

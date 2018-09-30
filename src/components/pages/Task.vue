@@ -37,6 +37,7 @@
                     <el-button type="primary" size="small" @click="submitForm">查询</el-button>
                     <el-button type="default" size="small" @click="resetForm">重置</el-button>
                     <el-button type="success" size="small" @click="publishTaskVisible = true" v-show="save_task">发布任务</el-button>
+                    <el-button type="success" size="small" @click="autoPublishTask">自动发布任务</el-button>
                 </el-form-item>    
             </el-form>
         </el-header>
@@ -47,18 +48,18 @@
                 :data="taskTable"
                 style="width:100%"
             >
-                <el-table-column prop="id" label="#" width="80"></el-table-column>
-                <el-table-column prop="username" label="账户" width="150"></el-table-column>
+                <el-table-column prop="id" label="#"></el-table-column>
+                <el-table-column prop="username" label="账户"></el-table-column>
                 <!-- <el-table-column prop="taskType" label="任务类型" width="150"> 
                     <template slot-scope="scope">
                         <span v-if="scope.row.taskType == '0'">矩形标注</span>
                         <span v-else-if="scope.row.taskType == '1'">24小图标注</span>
                     </template>
                 </el-table-column>-->
-                <el-table-column prop="tName" label="任务名" width="150"></el-table-column>
-                <el-table-column prop="count" label="标注数量" width="150"></el-table-column>
-                <el-table-column prop="publishTime" label="发布时间" width="220"></el-table-column>
-                <el-table-column prop="status" label="任务状态" width="140">
+                <el-table-column prop="tName" label="任务名" ></el-table-column>
+                <el-table-column prop="count" label="标注数量" ></el-table-column>
+                <el-table-column prop="publishTime" label="发布时间" ></el-table-column>
+                <el-table-column prop="status" label="任务状态" >
                     <template slot-scope="scope">
                         <el-tag
                         v-if="scope.row.status == '0'"
@@ -89,8 +90,8 @@
                         disable-transitions>24框导出完成</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="name" label="标注人员" width="150"></el-table-column>
-                <el-table-column prop="personStatus" label="人员状态" width="150">
+                <el-table-column prop="name" label="标注人员"></el-table-column>
+                <el-table-column prop="personStatus" label="人员状态">
                     <template slot-scope="scope">
                         <el-tag
                         v-if="scope.row.personStatus == '0'"
@@ -104,7 +105,7 @@
                         </el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column v-if="update_status" prop="personStatus" label="修改人员状态" width="200" align="center">
+                <el-table-column v-if="update_status" prop="personStatus" label="修改人员状态" align="center">
                     <template slot-scope="scope">
                          <el-select v-if="scope.row.personStatus == '1'" :label="scope.row.name" :key="scope.row.id" size="mini" :value="scope.row.name" placeholder="移交任务" class="uniftyWidth" @change="changeTransferPerson(scope.row.id, $event)">
                             <el-option v-for=" (item, index) in transferPersonList" :key="item.id" :value="item.id" :label="item.name" ></el-option>
@@ -113,7 +114,7 @@
                         <span v-else><i class="el-icon-circle-close-outline"></i></span>
                     </template>
                 </el-table-column>
-                <el-table-column prop="status" label="修改任务状态" width="200" align="center">
+                <el-table-column prop="status" label="修改任务状态" align="center">
                     <template slot-scope="scope">
                         <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " value="" @change="updateTaskStatus(scope.row.id, $event)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">矩形框标注完成</el-option>
@@ -122,7 +123,7 @@
                         <span v-else><i class="el-icon-circle-close-outline"></i></span>
                     </template>
                 </el-table-column>
-                <el-table-column fixed="right" label="操作" width="200">
+                <el-table-column fixed="right" label="操作">
                     <template slot-scope="scope">
                         <el-button type="text" size="small" v-show="scope.row.status == '0'" @click="receiveTask(scope.row.id, scope.row.status)">领取</el-button>
                         <!-- <el-button type="text" size="small" v-show="scope.row.status == '1'" @click="window.location.href='./index.html'">标注</el-button>
@@ -226,8 +227,7 @@ export default {
             transferPersonList: [], //在职人员列表
             publishTaskVisible: false, //发布任务模态框
             publishTaskForm: {  
-                name: '',
-               
+                name: '', 
                 count: '',
                 userId: []
             },
@@ -236,7 +236,8 @@ export default {
                 { label: '24小图标注', value: 1 }
             ],      
             update_status: false,
-            save_task: false,      
+            save_task: false, 
+            userId: [] //自动派发任务使用    
         }
     },
     components: {
@@ -274,6 +275,21 @@ export default {
                     Message.error(res.data.message)
                 }
             })
+        },
+                //自动派发任务
+        autoPublishTask() {
+            if(confirm('确认发布?')){
+                axios({
+                    url: url.publishTask,
+                    method: 'get'
+                }).then( res => {
+                    if(res.data.result){
+                        this.getTaskTable()
+                    }else{
+                        Message.error(res.data.message)
+                    }
+                })
+            }     
         },
         publishTaskCancle() {
             this.publishTaskVisible = false

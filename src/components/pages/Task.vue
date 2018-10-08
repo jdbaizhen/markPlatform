@@ -127,8 +127,8 @@
                         <el-button type="text" size="small" v-show="scope.row.status == '0'" @click="receiveTask(scope.row.id)">领取</el-button> 
                         <el-button type="text" size="small" v-show="scope.row.status == '3' && save_task == true" style="margin-left:0px" @click="repairTask(scope.row.id)">修复</el-button>
                         <el-button type="text" size="small" v-show="scope.row.status == '5' && save_task == true" style="margin-left:0px" @click="repairResult(scope.row.id)">修复结果</el-button>
-                        <!-- <el-button type="text" size="small" v-show="scope.row.status == '1'&&scope.row.taskType== '0'" @click="window.location.href='./index.html'">标注</el-button> -->
-                        <!-- <router-link :to="{path:'clothestype',query: {id: scope.row.id}}" v-show="scope.row.status == '1'&&scope.row.taskType== '1'"><el-button type="text" size="small" >标注</el-button></router-link> -->
+                        <!-- <el-button type="text" size="small" v-show="scope.row.status == '1'&&scope.row.taskType== '0'" @click="window.location.href='./index.html'">标注</el-button>  -->
+                        <router-link :to="{path:'clothestype',query: {id: scope.row.id}}" v-show="scope.row.status == '1'&&scope.row.taskType== '1'"><el-button type="text" size="small" >标注</el-button></router-link>
                         <router-link :to="{path:'/taskdetail',query: {id: scope.row.id}}"><el-button type="text" size="small" >任务详情</el-button></router-link>
                         <el-button type="text" size="small" @click="deleteTask(scope.row)">删除</el-button>
                     </template>

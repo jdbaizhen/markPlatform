@@ -49,52 +49,56 @@
                         <el-tag
                             v-else-if="scope.row.status == '1'"
                             type="info"
-                            >进行中
+                            >矩形进行中
                         </el-tag>
                         <el-tag
                             v-else-if="scope.row.status == '2'"
-                            type="success"
-                            >标注完成
+                            >矩形标注完成
                         </el-tag>
                         <el-tag
                             v-else-if="scope.row.status == '3'"
-                            type="success"
-                            >审核完成
+                            >矩形审核完成
                         </el-tag>
                         <el-tag
                             v-else-if="scope.row.status == '4'"
-                            type="success"
-                            >切割完成
+                            type="warning"
+                            >24切割完成
                         </el-tag>
                         <el-tag
                             v-else-if="scope.row.status == '5'"
-                            type="success"
-                            >切割审核完成
+                            type="warning"
+                            >24标注完成
+                        </el-tag>
+                        <el-tag
+                            v-else-if="scope.row.status == '6'"
+                            type="warning"
+                            >24审核完成
                         </el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column props="status" label="操作">
                     <template slot-scope="scope">
-                        <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="primary" v-if="scope.row.status == '4'" size="small">审核</el-button></router-link>
-                        <el-button type="warning" v-if="scope.row.status == '3' && scope.row.tStatus == '4'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>   
-                        <el-button type="primary" v-if="scope.row.status == '5'" @click="interimDetail(scope.row.id)" size="small">查看详情</el-button>   
-                        <el-button type="default" size="small" v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 2 || scope.row.status == 3 && scope.row.tStatus != '4' " disabled>暂无可操作事项</el-button>
+                       <!-- <router-link :to="{path: '/clothestypeaudit', query:{id: scope.row.id}}"><el-button type="primary" v-if="scope.row.status == '4'" size="small">审核</el-button></router-link>-->
+                        <el-button type="warning" v-if="scope.row.status == '3' && scope.row.tStatus == '4'" @click="taskAdjust(scope.row.id)" size="small">切割</el-button>
+                        <el-button type="danger" v-if="scope.row.status == '4' || scope.row.status == '5'" @click="deleteAdjustPic(scope.row.id)" size="small">删除</el-button>
+                        <el-button type="primary" v-if="scope.row.status == '5' || scope.row.status == '4' || look_detail" @click="interimDetail(scope.row.id)" size="small">查看详情</el-button>
+                        <!--<el-button type="default" size="small" v-else disabled>暂无可操作事项</el-button>-->
                     </template>
                 </el-table-column>
             </el-table>
             <el-dialog
-                title="查看大图"
+                :title="`类型提示：${tipClothesTypes}`"
                 :visible.sync="showImageVisiable"
                 width="1240px"
             >
                 <img :src="showImageInfo.imgpath" alt="image" width="100%">
-                <svg 
-					v-show="svgShow"
-					width="1200px" :height="svgHeight" 
-					version="1.1" xmlns="http://www.w3.org/2000/svg" 
-					style="position: absolute;top: 84px;left: 20px;display: block"
-					v-for="(item,index) in showImageInfo.squareInfoList"
-				>
+                <svg
+                  v-show="svgShow"
+                  width="1200px" :height="svgHeight"
+                  version="1.1" xmlns="http://www.w3.org/2000/svg"
+                  style="position: absolute;top: 84px;left: 20px;display: block"
+                  v-for="(item,index) in showImageInfo.squareInfoList"
+                >
 					<g>
 						<rect :x="item.x*scale"
 							:y="item.y*scale"
@@ -121,13 +125,13 @@
                 </span>
             </el-dialog>
             <el-dialog
-                title="24小图详情"
+                :title="`类型提示：${tipClothesTypes}`"
                 :visible.sync="interimDetailVisiable"
                 width= "90%"
             >
                 <ul class="interim-container">
                     <li v-for="(item, index) in interimArr" :key="index">
-                        <img :src="item.squareImagePath" alt="">
+                        <img :src="item.squareImagePath" alt="" @click="changeSquareId(item.squareImageId)" :class="item.squareImageId===squareImageId? 'checkedSquare' : ''">
                         <div class="feature-conatiner">
                             <p v-for="(ite, ind) in item.clothesTypeList">
                                 <span>{{ite.clothesType}}--></span>
@@ -135,9 +139,34 @@
                                     {{ie.featureType}}
                                 </span>
                             </p>
-                        </div> 
+                        </div>
                     </li>
                 </ul>
+                <span slot="footer" class="dialog-footer">
+                    <el-select
+                        v-model="clothesChose"
+                        multiple
+                        size="mini"
+                        placeholder="请选择衣物类型"
+                        class="clothes-type"
+                    >
+                        <el-option-group
+                            v-for="(item, index) in clothesTypeOne"
+                            :key="item.clothesId"
+                            :label="item.clothesType"
+                        >
+                            <el-option
+                                v-for="(ite, ind) in item.clothesFeatureList"
+                                :key="ite.featureId"
+                                :label="ite.featureType"
+                                :value="ite.featureId"
+                            ></el-option>
+                        </el-option-group>
+                    </el-select>
+                    <el-button type="info" size="mini" @click="passFixedSquareImage">修改</el-button>
+                    <el-button type="success" size="mini" v-show="search_detail" @click="completeFixedSquareImage">完成</el-button>
+                    <el-button type="success" size="mini" v-show="taskdetail_label_finish" @click="completeFixedOfStudent">完成</el-button>
+                </span>
             </el-dialog>
         </el-main>
         <el-footer>
@@ -160,158 +189,265 @@ import axios from 'axios'
 import url from '@/api/taskDetail.js'
 import { Message } from 'element-ui'
 export default {
-    name: 'TaskDetail',
-    data() {
-        return {
-            loading: false,
-            svgShow: true,
-            searchBreadcrumb: [
-               // { path: '/task', name: '任务管理'},
-                { path: '/task', name: '任务列表'},
-                { path: '/taskdetail', name: '任务详情'},
-                // { path: '', name: '搜索'}
-            ],
-            listBreadcrumb: [
-                { path: '/task', name: '任务管理'},
-                { path: '/task', name: '任务列表'},
-                { path: '/taskdetail', name: '任务详情'},
-                { path: '', name: '列表'}
-            ],
-            taskDetailForm: {
-                imgname: '',
-                status: '',
-                clothesCapacity: '',
-                id: '',
-                pageIndex: 1
-            },
-            imgStatus: [
-                { label: '未标注', value: 0 },
-                { label: '进行中', value: 1 },
-                { label: '标注完成', value: 2 },
-                { label: '审核完成', value: 3 },
-                { label: '切割完成', value: 4 },
-                { label: '切割审核完成', value: 5 },
-            ],
-            clothesCapacity: [
-                { label: 'few', value: 'few' },
-                { label: 'mid', value: 'mid' },
-                { label: 'many', value: 'many' }
-            ],
-            taskDetailTable: [],
-            pageCount: 0,
-            taskDetailPage: 1,
-            showImageVisiable: false, //查看大图
-            showImageInfo: {
-                height: '',
-                width: '',
-                imgId: '',
-                imgpath: '',
-                nextImgId: '',
-                preImgId: ''
-            },
-            scale: 0,
-            svgHeight: 0,
-            interimDetailVisiable: false,
-            interimArr: []
-        }
-    },
-    components: {
-        Breadcrumb
-    },
-    created() {
-        let href = window.location.href
-        let personId = href.indexOf('id') === -1 ? '': href.substring(href.indexOf('id')+3)
-        this.taskDetailForm.id = personId    
-    },
-    mounted() {
-        let isLogin = getSession('isLogin');
-        if(isLogin){
-            this.getTaskDetailTable()
-        }
-    },
-    methods: {
-        getTaskDetailTable() {
-            this.loading = true
-            let params = dataFarmat(this.taskDetailForm)
-            axios({
-                url: url.getTaskDetailTable+'?'+params,
-                method: 'get'
-            }).then( res => {
-                if(res.data.result){
-                    let data = JSON.parse(res.data.data)
-                    this.pageCount = data.count
-                    this.taskDetailTable = data.details
-                    this.loading = false
-                }else{
-                    Message.error(res.data.message)
-                }       
-            })
-        },
-        submitForm() {
-            this.taskDetailForm.pageIndex = 1
-            this.getTaskDetailTable()
-            this.taskDetailPage = 1
-        },
-        resetForm() {
-            this.taskDetailForm.imgname = ''
-            this.taskDetailForm.status = ''
-            this.taskDetailForm.clothesCapacity = ''
-            this.taskDetailForm.pageIndex = 1
-        },
-        handleCurrentChange(val) {
-            this.taskDetailForm.pageIndex = val
-            this.getTaskDetailTable()
-        },
-        showImage(imgId) {
-            let tid = this.taskDetailForm.id
-            let params = dataFarmat({tid: tid, imgId: imgId})
-            axios({
-                url: url.getImagePath+'?'+params,
-                method: 'get'
-            }).then( res => {
-                if(res.data.result){
-                    let data = JSON.parse(res.data.data)
-                    this.showImageInfo = data
-                    this.scale = 1200/data.width
-                    this.svgHeight = this.scale*data.height
-                    this.showImageVisiable = true     
-                }else{
-                    Message.error(res.data.message)
-                }
-            })
-        },
-        showImageCancel() {
-            this.showImageVisiable = false
-        },
-        toggoleSvg() {
-            this.svgShow = !this.svgShow
-        },
-        //图片切割
-        taskAdjust(id) {
-            axios({
-                url: `${url.taskAdjust}?id=${id}`,
-                method: 'get'
-            }).then( res => {
-                if(res.data.result){
-                    Message.success('切割成功')
-                    this.getTaskDetailTable()
-                }
-            }) 
-        },
-        //查看详情
-        interimDetail(id) {
-            axios({
-                url: `${url.interimDetail}?tid=${id}`,
-                method: 'get'
-            }).then( res => {
-                if(res.data.result){
-                    let data = JSON.parse(res.data.data);
-                    this.interimArr = data
-                    this.interimDetailVisiable = true
-                }
-            })
-        }
+  name: 'TaskDetail',
+  data () {
+    return {
+      loading: false,
+      svgShow: true,
+      searchBreadcrumb: [
+        // { path: '/task', name: '任务管理'},
+        { path: '/task', name: '任务列表'},
+        { path: '/taskdetail', name: '任务详情'}
+        // { path: '', name: '搜索'}
+      ],
+      listBreadcrumb: [
+        { path: '/task', name: '任务管理'},
+        { path: '/task', name: '任务列表'},
+        { path: '/taskdetail', name: '任务详情'},
+        { path: '', name: '列表'}
+      ],
+      taskDetailForm: {
+        imgname: '',
+        status: '',
+        clothesCapacity: '',
+        id: '',
+        pageIndex: 1
+      },
+      imgStatus: [
+        { label: '未标注', value: 0 },
+        { label: '进行中', value: 1 },
+        { label: '标注完成', value: 2 },
+        { label: '审核完成', value: 3 },
+        { label: '切割完成', value: 4 },
+        { label: '切割审核完成', value: 5 }
+      ],
+      clothesCapacity: [
+        { label: 'few', value: 'few' },
+        { label: 'mid', value: 'mid' },
+        { label: 'many', value: 'many' }
+      ],
+      taskDetailTable: [],
+      pageCount: 0,
+      taskDetailPage: 1,
+      showImageVisiable: false, // 查看大图
+      showImageInfo: {
+        height: '',
+        width: '',
+        imgId: '',
+        imgpath: '',
+        nextImgId: '',
+        preImgId: ''
+      },
+      scale: 0,
+      svgHeight: 0,
+      interimDetailVisiable: false,
+      interimArr: [],
+      clothesTypeOne: [],
+      clothesChose: [],
+      squareImageId: null,
+      tid: null,
+      interimClothesTypes: [],
+      search_detail: false,
+      look_detail: false,
+      taskdetail_label_finish: false
     }
+  },
+  components: {
+    Breadcrumb
+  },
+  created () {
+    let href = window.location.href
+    let personId = href.indexOf('id') === -1 ? '' : href.substring(href.indexOf('id') + 3)
+    this.taskDetailForm.id = personId
+  },
+  mounted () {
+    let isLogin = getSession('isLogin')
+    if (isLogin) {
+      this.getTaskDetailTable()
+      this.getClothesTypeOne()
+    }
+    let roleString = getSession('role')
+    if (roleString) {
+      if (roleString.indexOf('search_detail') !== -1) {
+        this.search_detail = true
+      }
+	  if (roleString.indexOf('look_detail') !== -1) {
+        this.look_detail = true
+      }
+      if (roleString.indexOf('taskdetail_label_finish') !== -1) {
+        this.taskdetail_label_finish = true
+      }
+    }
+  },
+  computed: {
+    'tipClothesTypes': function () {
+      return this.interimClothesTypes.join(' , ')
+    }
+  },
+  methods: {
+    getClothesTypeOne () {
+      axios({
+        url: url.clothesTypeOne,
+        method: 'get'
+      }).then(res => {
+        if (res.data.result) {
+          let clothesTypeOne = JSON.parse(res.data.data)
+          this.clothesTypeOne = clothesTypeOne
+        }
+      })
+    },
+    changeSquareId (id) {
+      this.squareImageId = id
+    },
+    passFixedSquareImage () {
+      let squareImageId = this.squareImageId
+      let clothesChose = this.clothesChose
+      let params = dataFarmat({squareImageId, featureId: clothesChose})
+      axios({
+        url: url.passFixedSquare,
+        method: 'post',
+        data: params
+      }).then(res => {
+        if (res.data.result) {
+          this.clothesChose = []
+          this.interimDetail(this.tid)
+        }
+      })
+    },
+    getTaskDetailTable () {
+      this.loading = true
+      let params = dataFarmat(this.taskDetailForm)
+      axios({
+        url: url.getTaskDetailTable + '?' + params,
+        method: 'get'
+      }).then(res => {
+        if (res.data.result) {
+          let data = JSON.parse(res.data.data)
+          this.pageCount = data.count
+          this.taskDetailTable = data.details
+          this.loading = false
+        } else {
+          Message.error(res.data.message)
+        }
+      })
+    },
+    submitForm () {
+      this.taskDetailForm.pageIndex = 1
+      this.getTaskDetailTable()
+      this.taskDetailPage = 1
+    },
+    resetForm () {
+      this.taskDetailForm.imgname = ''
+      this.taskDetailForm.status = ''
+      this.taskDetailForm.clothesCapacity = ''
+      this.taskDetailForm.pageIndex = 1
+    },
+    handleCurrentChange (val) {
+      this.taskDetailForm.pageIndex = val
+      this.getTaskDetailTable()
+    },
+    showImage (imgId) {
+      let tid = this.taskDetailForm.id
+      let params = dataFarmat({tid: tid, imgId: imgId})
+      axios({
+        url: url.getImagePath + '?' + params,
+        method: 'get'
+      }).then(res => {
+        if (res.data.result) {
+          let data = JSON.parse(res.data.data)
+          this.showImageInfo = data
+          this.scale = 1200 / data.width
+          this.svgHeight = this.scale * data.height
+          this.showImageVisiable = true
+          this.interimClothesTypes = data.clothesTypes
+        } else {
+          Message.error(res.data.message)
+        }
+      })
+    },
+    showImageCancel () {
+      this.showImageVisiable = false
+    },
+    toggoleSvg () {
+      this.svgShow = !this.svgShow
+    },
+    // 图片切割
+    taskAdjust (id) {
+      axios({
+        url: `${url.taskAdjust}?id=${id}`,
+        method: 'get'
+      }).then(res => {
+        if (res.data.result) {
+          Message.success('切割成功')
+          this.getTaskDetailTable()
+        }
+      })
+    },
+    // 查看详情
+    interimDetail (id) {
+      if (id !== 'undefined') this.tid = id
+      axios({
+        url: `${url.interimDetail}?tid=${id}`,
+        method: 'get'
+      }).then(res => {
+        if (res.data.result) {
+          let data = JSON.parse(res.data.data)
+          this.interimClothesTypes = data.clothesTypes
+          this.interimArr = data.squareImages
+          this.interimDetailVisiable = true
+        }
+      })
+    },
+    deleteAdjustPic (id) {
+      let params = dataFarmat({'tid': id})
+      if (confirm('确认删除？')) {
+        axios({
+          url: url.deleteAdjustSquare,
+          method: 'post',
+          data: params
+        }).then(res => {
+          if (res.data.result) {
+            Message.success('删除成功')
+            this.getTaskDetailTable()
+          } else {
+            Message.error(res.data.message)
+          }
+        })
+      }
+    },
+    completeFixedSquareImage () {
+      let id = this.tid
+      let params = dataFarmat({id: id})
+      if (confirm('确认完成该图？')) {
+        axios({
+          url: url.fixedComplete,
+          method: 'post',
+          data: params
+        }).then(res => {
+          if (res.data.result) {
+            this.getTaskDetailTable()
+            this.interimDetailVisiable = false
+          }
+        })
+      }
+    },
+    completeFixedOfStudent () {
+      let id = this.tid
+      let params = dataFarmat({tid: id})
+      if (confirm('确认完成该图？')) {
+        axios({
+          url: url.fixedCompleteStudent,
+          method: 'post',
+          data: params
+        }).then(res => {
+          if (res.data.result) {
+            this.getTaskDetailTable()
+            this.interimDetailVisiable = false
+          }
+        })
+      }
+    }
+  }
 }
 </script>
 
@@ -347,5 +483,9 @@ export default {
     margin: 0px;
     height: 30px;
     line-height: 30px;
+}
+.checkedSquare{
+    box-sizing: border-box;
+    border: 5px solid red;
 }
 </style>

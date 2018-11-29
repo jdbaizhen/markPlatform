@@ -23,6 +23,6 @@ export default {
     text-align: center;
     border-top: 1px solid #ccc;
     color: #fff;
-    background: rgba(9, 194, 201, 0.7);
+    background: rgba(64, 158, 255, 0.8);
 }
 </style>

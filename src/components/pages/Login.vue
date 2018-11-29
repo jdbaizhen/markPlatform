@@ -86,7 +86,7 @@ export default {
           setSession('isLogin',true);
           this.$router.push({path: '/task'});
         }else{
-          Message.error('请检查账号密码是否输入错误')
+          Message.error(res.data.message)
         }
       })
     }

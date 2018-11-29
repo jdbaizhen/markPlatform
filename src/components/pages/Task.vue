@@ -48,8 +48,8 @@
                 :data="taskTable"
                 style="width:100%"
             >
-                <el-table-column prop="id" label="#"></el-table-column>
-                <el-table-column prop="username" label="账户"></el-table-column>
+                <el-table-column v-show="show_column || show_person_column" prop="id" label="#"></el-table-column>
+                <el-table-column prop="username" v-show="show_column" label="账户"></el-table-column>
                 <!-- <el-table-column prop="taskType" label="任务类型" width="150"> 
                     <template slot-scope="scope">
                         <span v-if="scope.row.taskType == '0'">矩形标注</span>
@@ -58,7 +58,7 @@
                 </el-table-column>-->
                 <el-table-column prop="tName" label="任务名" ></el-table-column>
                 <el-table-column prop="count" label="标注数量" ></el-table-column>
-                <el-table-column prop="publishTime" label="发布时间" ></el-table-column>
+                <el-table-column prop="publishTime" v-show="show_column" label="发布时间" ></el-table-column>
                 <el-table-column prop="status" label="任务状态" >
                     <template slot-scope="scope">
                         <el-tag
@@ -85,12 +85,20 @@
                         type="danger"
                         disable-transitions>24框标注完成</el-tag>
                         <el-tag
-                        v-else="scope.row.status == '6'"
+                        v-else-if="scope.row.status == '6'"
                         type="warning"
                         disable-transitions>24框导出完成</el-tag>
+                        <el-tag
+                        v-else-if="scope.row.status == '7'"
+                        type="warning"
+                        disable-transitions>24框审核完成</el-tag>
+                        <el-tag
+                        v-else
+                        type="info"
+                        disable-transitions>暂无状态</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column prop="name" label="标注人员"></el-table-column>
+                <el-table-column prop="name" v-show="show_column" label="标注人员"></el-table-column>
                 <el-table-column prop="personStatus" label="人员状态">
                     <template slot-scope="scope">
                         <el-tag
@@ -116,9 +124,10 @@
                 </el-table-column>
                 <el-table-column prop="status" label="修改任务状态" align="center">
                     <template slot-scope="scope">
-                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 " value="" @change="updateTaskStatus(scope.row.id, $event)" size="mini" placeholder="任务状态" class="uniftyWidth">
+                        <el-select v-if="scope.row.status == 0 || scope.row.status == 1 || scope.row.status == 3 || scope.row.status == 4 || scope.row.status == 5 " value="" @change="updateTaskStatus(scope.row.id, $event)" size="mini" placeholder="任务状态" class="uniftyWidth">
                             <el-option value="2">矩形框标注完成</el-option>
                             <el-option value="5">24框标注完成</el-option>
+                            <el-option v-show="save_task" value="7">24框审核完成</el-option>
                         </el-select>
                         <span v-else><i class="el-icon-circle-close-outline"></i></span>
                     </template>
@@ -215,6 +224,7 @@ export default {
                 { label: '矩形框审核完成', value: '3' },
                 { label: '矩形框导出', value: '4' },
                 { label: '24框标注完成', value: '5' },
+                { label: '24框审核完成', value: '7' },
                 { label: '24框导出完成', value: '6' },
             ],
             personStatus: [
@@ -237,6 +247,8 @@ export default {
             ],      
             update_status: false,
             save_task: false, 
+			show_column: false,
+			show_person_column: false,
             userId: [] //自动派发任务使用    
         }
     },
@@ -252,6 +264,12 @@ export default {
             }
             if(roleString.indexOf('save_task') != -1){
                 this.save_task = true
+            }
+			if(roleString.indexOf('show_column') != -1){
+                this.show_column = true
+            }
+			if(roleString.indexOf('show_person_column') != -1){
+                this.show_person_column = true
             }
         }  
         if(isLogin){

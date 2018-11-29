@@ -15,7 +15,7 @@
                 <el-form-item>
                     <el-select v-model="exportForm.status" placeholder="任务状态" size="small">
                         <el-option value="3" label="矩形框审核完成">矩形框审核完成</el-option>
-                        <el-option value="5" label="24框标注完成">24框标注完成</el-option>
+                        <el-option value="7" label="24框审核完成">24框审核完成</el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -59,6 +59,11 @@
                         v-else-if="scope.row.status == '5'"
                         type="danger"
                         disable-transitions>24框标注完成</el-tag>
+
+                        <el-tag
+                        v-else-if="scope.row.status == '7'"
+                        type="success"
+                        disable-transitions>24框审核完成</el-tag>
                     </template>
                 </el-table-column>
             </el-table>

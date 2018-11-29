@@ -34,9 +34,19 @@
             </div> 
             
         </el-header>
-        <el-main class="clothes-main">
-            <img :src="imgSize.imgpath" :width="imgSize.imgWidth" :height="imgSize.imgHeight" class="img-border-info">
-        </el-main>
+        <el-container>
+            <el-main style="overflow:scroll">
+                <img :src="imgSize.imgpath" :width="imgSize.imgWidth" :height="imgSize.imgHeight" class="img-border-success">
+            </el-main>
+            <el-aside class="clothes-aside" width="400px">
+                <h2 style="marginTop:0px">选择衣物类型：</h2>
+                <el-checkbox-group v-for="(item, index) in clothesTypeOne" :key="index" v-model="clothesChose" size="small" style="marginTop:20px">
+                    <h3 style="fontSize:14px">{{item.clothesType}}</h3>
+                    <el-checkbox-button v-for="(ite, ind) in item.clothesFeatureList" :label="ite.featureId" :key="ite.featureId">{{ite.featureType}}</el-checkbox-button>
+                </el-checkbox-group>
+            </el-aside>
+        </el-container>
+        
     </el-container>
 </template>
 
@@ -236,11 +246,9 @@ export default {
 .clothes-type{
     width: 70%;
 }
-.clothes-main{
-    position: fixed;
-    top: 140px;
-    bottom: 50px;
-    overflow-y: scroll;
+.clothes-aside{
+    float: right;
+    padding: 20px;
 }
 .clothes-main::-webkit-scrollbar {/*滚动条整体样式*/
     width: 4px;     /*高宽分别对应横竖滚动条的尺寸*/
